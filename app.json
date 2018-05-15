@@ -1,0 +1,47 @@
+{
+  "name": "Ethio API",
+  "description": "A RESTful API for the Ethereum blockchain, powered by Rails",
+  "keywords": [
+    "REST",
+    "API",
+    "rubyonrails",
+    "rails",
+    "Ethereum",
+    "blockchain"
+  ],
+
+  "website": "https://ethio.app",
+  "repository": "https://github.com/sandstormco/ethio-api",
+  "logo": "",
+
+  "success_url": "/",
+
+  "scripts": {
+    "postdeploy": "bundle exec rake db:migrate && bundle exec rake db:seed"
+  },
+
+  "env": {
+    "SECRET_KEY_BASE": {
+      "description": "This gets generated",
+      "generator":   "secret"
+    },
+
+    "DISABLE_SPRING": "true",
+    "MIN_THREADS": "1",
+    "MAX_THREADS": "1"
+  },
+
+  "addons": [
+    "heroku-postgresql:hobby-dev"
+  ],
+
+  "image": "heroku-18",
+
+  "environments": {
+    "test": {
+      "buildpacks": [
+        { "url": "heroku/ruby" }
+      ]
+    }
+  }
+}
