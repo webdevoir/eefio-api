@@ -11,8 +11,12 @@
 .DS_Store
 .idea/
 
-# Ignore encrypted secrets key file.
+# Ignore master key for decrypting credentials and more.
 config/secrets.yml.key
 config/master.key
 
+# Ignore RSpec local output
 spec/examples.txt
+
+# Ignore uploaded files in development
+/storage/*
