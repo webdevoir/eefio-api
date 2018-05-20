@@ -16,8 +16,12 @@ gem 'bootsnap', '>= 1.1.0', require: false
 # Use Rack CORS for handling Cross-Origin Resource Sharing (CORS), making cross-origin AJAX possible
 # gem 'rack-cors'
 
-# ethereum network api
+# Ethereum network API
 gem 'web3-eth'
+
+# For better threading: promises, futures, etc
+gem 'concurrent-ruby', require: 'concurrent'
+gem 'concurrent-ruby-ext'
 
 group :development, :test do
   gem 'dotenv-rails'
