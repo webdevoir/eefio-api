@@ -1,0 +1,2 @@
+class RawBlock < ApplicationRecord
+end
