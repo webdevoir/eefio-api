@@ -22,4 +22,39 @@ web3 = Web3::Eth::Rpc.new host: ETHEREUM_NODE_HOST,
                           }
 
 # Get the latest block’s number
-latest_block = web3.eth.blockNumber
+latest_block_number = web3.eth.blockNumber
+
+# Get the latest RawBlock from the database
+latest_raw_block        = RawBlock.order(block_number: :desc).limit(1).first
+latest_raw_block_number = latest_raw_block&.block_number || 0
+
+# Exit if the database is synced up with the blockchain
+if latest_raw_block_number >= latest_block_number
+  puts "RawBlocks synced with Ethereum blockchain!"
+  exit 0
+end
+
+# Setup the number of the next block to import
+# Fallback to 0 if there are no RawBlocks yet
+next_block_number = latest_raw_block.blank? ? 0 : (latest_raw_block_number + 1)
+
+# Walk up from the latest imported block to the latest on the blockchain
+loop do
+  # Get the next block from the Ethereum node
+  block = web3.eth.getBlockByNumber next_block_number
+
+  # Save the block to the raw_blocks table in the database
+  raw_block = RawBlock.create! block_number: block.block_number, content: block.raw_data
+
+  # Increment the block number for the next block
+  next_block_number = raw_block.block_number + 1
+
+  puts "Saved block: #{raw_block.block_number}"
+
+  break if raw_block.block_number >= latest_block_number
+end
+
+puts
+puts "Latest block on blockchain (at start of sync): #{latest_block_number}"
+puts "RawBlocks now in the database:                 #{RawBlock.count}"
+puts
