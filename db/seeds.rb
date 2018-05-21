@@ -1,3 +1,5 @@
+require 'concurrent'
+
 # TEMP: for testing time only
 RawBlock.destroy_all
 
@@ -8,7 +10,7 @@ ETHEREUM_NODE_OPEN_TIMEOUT = ENV['ETHEREUM_NODE_OPEN_TIMEOUT'] || 20
 ETHEREUM_NODE_READ_TIMEOUT = ENV['ETHEREUM_NODE_READ_TIMEOUT'] || 140
 ETHEREUM_NODE_USE_SSL      = ENV['ETHEREUM_NODE_USE_SSL']      || true
 ETHEREUM_NODE_RPC_PATH     = ENV['ETHEREUM_NODE_RPC_PATH']     || '/'.freeze
-HTTP_THREAD_COUNT          = ENV['HTTP_THREAD_COUNT'].to_i     || 25
+HTTP_THREAD_COUNT          = ENV['HTTP_THREAD_COUNT'].to_i     || 100
 
 # README:
 # If you’re using Infura.io for your host, you’ll need to get an API key from their website.
@@ -42,13 +44,25 @@ end
 # Fallback to 0 if there are no RawBlocks yet
 next_block_number = latest_raw_block.blank? ? 0 : (latest_raw_block_number + 1)
 
+
+# Use our own thread pool
+pool = Concurrent::ThreadPoolExecutor.new(
+         min_threads:     [2, Concurrent.processor_count].max,
+         max_threads:     100,
+         auto_terminate:  true,
+         idletime:        60,    # 1 minute
+         max_queue:       0,     # unlimited
+         fallback_policy: :abort # shouldn't matter with '0 max queue'
+       )
+
+
 # Work through the blockchain in groups of blocks at a time
 (next_block_number..latest_block_number).each_slice(HTTP_THREAD_COUNT) do |slice|
-  # Create all of the threads of work to do: get a block, save it to the database
-  threads = []
+  # Create all of the promisess of work to do: get a block, save it to the database
+  promises = []
 
   slice.each do |block_number|
-    threads << Thread.new do
+    promise = Concurrent::Promise.new(executor: pool) do
       # Get the next block from the Ethereum node
       block = web3.eth.getBlockByNumber block_number
 
@@ -58,11 +72,12 @@ next_block_number = latest_raw_block.blank? ? 0 : (latest_raw_block_number + 1)
         puts "Saved block: #{raw_block.block_number}"
       end
     end
+
+    promises << promise.execute
   end
 
-  # Do the work in all of the threads: get a block, save it to the database
-  threads.each { |t| t.join }
-  sleep 1
+  # Do the work in all of the promises: get a block, save it to the database
+  promises.map { |p| p.value }
 
   puts
   puts "RawBlocks now in the database: #{RawBlock.count}"
