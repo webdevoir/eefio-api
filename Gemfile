@@ -19,10 +19,6 @@ gem 'bootsnap', '>= 1.1.0', require: false
 # Ethereum network API
 gem 'web3-eth'
 
-# For better threading: promises, futures, etc
-gem 'concurrent-ruby', require: 'concurrent'
-gem 'concurrent-ruby-ext'
-
 group :development, :test do
   gem 'dotenv-rails'
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console

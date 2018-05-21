@@ -1,5 +1,3 @@
-require 'concurrent'
-
 # TEMP: for testing time only
 RawBlock.destroy_all
 
@@ -10,6 +8,7 @@ ETHEREUM_NODE_OPEN_TIMEOUT = ENV['ETHEREUM_NODE_OPEN_TIMEOUT'] || 20
 ETHEREUM_NODE_READ_TIMEOUT = ENV['ETHEREUM_NODE_READ_TIMEOUT'] || 140
 ETHEREUM_NODE_USE_SSL      = ENV['ETHEREUM_NODE_USE_SSL']      || true
 ETHEREUM_NODE_RPC_PATH     = ENV['ETHEREUM_NODE_RPC_PATH']     || '/'.freeze
+HTTP_THREAD_COUNT          = ENV['HTTP_THREAD_COUNT'] || 25
 
 # README:
 # If you’re using Infura.io for your host, you’ll need to get an API key from their website.
@@ -43,13 +42,13 @@ end
 # Fallback to 0 if there are no RawBlocks yet
 next_block_number = latest_raw_block.blank? ? 0 : (latest_raw_block_number + 1)
 
-# Work through the blockchain in groups of 1000 blocks at a time
-(next_block_number..latest_block_number).each_slice(100) do |slice|
-  # Create all of the promises of work to do: get a block, save it to the database
-  promises = []
+# Work through the blockchain in groups of blocks at a time
+(next_block_number..latest_block_number).each_slice(HTTP_THREAD_COUNT) do |slice|
+  # Create all of the threads of work to do: get a block, save it to the database
+  threads = []
 
   slice.each do |block_number|
-    promises << Concurrent::Promise.execute do
+    threads << Thread.new do
       # Get the next block from the Ethereum node
       block = web3.eth.getBlockByNumber block_number
 
@@ -61,8 +60,13 @@ next_block_number = latest_raw_block.blank? ? 0 : (latest_raw_block_number + 1)
     end
   end
 
-  # Do the work in all of the promises: get a block, save it to the database
-  promises.map { |promise| puts promise.value; promise.value }
+  # Do the work in all of the threads: get a block, save it to the database
+  threads.each { |t| t.join }
+  sleep 1
+
+  puts
+  puts "RawBlocks now in the database: #{RawBlock.count}"
+  puts
 end
 
 puts
