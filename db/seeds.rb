@@ -65,7 +65,7 @@ pool = Concurrent::ThreadPoolExecutor.new(
 
       ActiveRecord::Base.connection_pool.with_connection do
         # Save the block to the raw_blocks table in the database
-        raw_block = RawBlock.create! block_number: block.block_number, content: block.raw_data
+        raw_block = RawBlock.create! block_number: block.block_number, content: block.raw_data.to_json
         puts "Saved block: #{raw_block.block_number}"
       end
     end
