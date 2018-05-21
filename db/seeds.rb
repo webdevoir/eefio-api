@@ -43,25 +43,27 @@ end
 # Fallback to 0 if there are no RawBlocks yet
 next_block_number = latest_raw_block.blank? ? 0 : (latest_raw_block_number + 1)
 
-promises = []
+# Work through the blockchain in groups of 1000 blocks at a time
+(next_block_number..latest_block_number).each_slice(100) do |slice|
+  # Create all of the promises of work to do: get a block, save it to the database
+  promises = []
 
-# Create all of the promises of work to do: get a block, save it to the database
-(0..1111).each do |i|
-# (next_block_number..latest_block_number).each do |i|
-  promises << Concurrent::Promise.execute do
-    # Get the next block from the Ethereum node
-    block = web3.eth.getBlockByNumber i
+  slice.each do |block_number|
+    promises << Concurrent::Promise.execute do
+      # Get the next block from the Ethereum node
+      block = web3.eth.getBlockByNumber block_number
 
-    ActiveRecord::Base.connection_pool.with_connection do
-      # Save the block to the raw_blocks table in the database
-      raw_block = RawBlock.create! block_number: block.block_number, content: block.raw_data
-      puts "Saved block: #{raw_block.block_number}"
+      ActiveRecord::Base.connection_pool.with_connection do
+        # Save the block to the raw_blocks table in the database
+        raw_block = RawBlock.create! block_number: block.block_number, content: block.raw_data
+        puts "Saved block: #{raw_block.block_number}"
+      end
     end
   end
-end
 
-# Do the work in all of the promises: get a block, save it to the database
-promises.map { |promise| promise.value }
+  # Do the work in all of the promises: get a block, save it to the database
+  promises.map { |promise| puts promise.value; promise.value }
+end
 
 puts
 puts "Latest block on blockchain (at start of sync): #{latest_block_number}"
