@@ -1,10 +1,15 @@
+require 'concurrent'
+
+# TEMP: for testing time only
+RawBlock.destroy_all
+
 # Setup in your .env file at the root of this Rails apps
-ETHEREUM_NODE_HOST         = ENV['ETHEREUM_NODE_HOST']          || 'mainnet.infura.io'.freeze
-ETHEREUM_NODE_PORT         = ENV['ETHEREUM_NODE_PORT']          || 443
-ETHEREUM_NODE_OPEN_TIMEOUT = ENV['ETHEREUM_NODE_OPEN_TIMEOUT']  || 20
-ETHEREUM_NODE_READ_TIMEOUT = ENV['ETHEREUM_NODE_READ_TIMEOUT']  || 140
-ETHEREUM_NODE_USE_SSL      = ENV['ETHEREUM_NODE_USE_SSL']       || true
-ETHEREUM_NODE_RPC_PATH     = ENV['ETHEREUM_NODE_RPC_PATH']      || '/'.freeze
+ETHEREUM_NODE_HOST         = ENV['ETHEREUM_NODE_HOST']         || 'mainnet.infura.io'.freeze
+ETHEREUM_NODE_PORT         = ENV['ETHEREUM_NODE_PORT']         || 443
+ETHEREUM_NODE_OPEN_TIMEOUT = ENV['ETHEREUM_NODE_OPEN_TIMEOUT'] || 20
+ETHEREUM_NODE_READ_TIMEOUT = ENV['ETHEREUM_NODE_READ_TIMEOUT'] || 140
+ETHEREUM_NODE_USE_SSL      = ENV['ETHEREUM_NODE_USE_SSL']      || true
+ETHEREUM_NODE_RPC_PATH     = ENV['ETHEREUM_NODE_RPC_PATH']     || '/'.freeze
 
 # README:
 # If you’re using Infura.io for your host, you’ll need to get an API key from their website.
@@ -38,21 +43,25 @@ end
 # Fallback to 0 if there are no RawBlocks yet
 next_block_number = latest_raw_block.blank? ? 0 : (latest_raw_block_number + 1)
 
-# Walk up from the latest imported block to the latest on the blockchain
-loop do
-  # Get the next block from the Ethereum node
-  block = web3.eth.getBlockByNumber next_block_number
+promises = []
 
-  # Save the block to the raw_blocks table in the database
-  raw_block = RawBlock.create! block_number: block.block_number, content: block.raw_data
+# Create all of the promises of work to do: get a block, save it to the database
+(0..1111).each do |i|
+# (next_block_number..latest_block_number).each do |i|
+  promises << Concurrent::Promise.execute do
+    # Get the next block from the Ethereum node
+    block = web3.eth.getBlockByNumber i
 
-  # Increment the block number for the next block
-  next_block_number = raw_block.block_number + 1
-
-  puts "Saved block: #{raw_block.block_number}"
-
-  break if raw_block.block_number >= latest_block_number
+    ActiveRecord::Base.connection_pool.with_connection do
+      # Save the block to the raw_blocks table in the database
+      raw_block = RawBlock.create! block_number: block.block_number, content: block.raw_data
+      puts "Saved block: #{raw_block.block_number}"
+    end
+  end
 end
+
+# Do the work in all of the promises: get a block, save it to the database
+promises.map { |promise| promise.value }
 
 puts
 puts "Latest block on blockchain (at start of sync): #{latest_block_number}"
