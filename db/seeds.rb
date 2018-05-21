@@ -1,8 +1,5 @@
 require 'concurrent'
 
-# TEMP: for testing time only
-RawBlock.destroy_all
-
 # Setup in your .env file at the root of this Rails apps
 ETHEREUM_NODE_HOST         = ENV['ETHEREUM_NODE_HOST']         || 'mainnet.infura.io'.freeze
 ETHEREUM_NODE_PORT         = ENV['ETHEREUM_NODE_PORT']         || 443
