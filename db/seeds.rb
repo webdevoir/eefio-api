@@ -8,7 +8,7 @@ ETHEREUM_NODE_OPEN_TIMEOUT = ENV['ETHEREUM_NODE_OPEN_TIMEOUT'] || 20
 ETHEREUM_NODE_READ_TIMEOUT = ENV['ETHEREUM_NODE_READ_TIMEOUT'] || 140
 ETHEREUM_NODE_USE_SSL      = ENV['ETHEREUM_NODE_USE_SSL']      || true
 ETHEREUM_NODE_RPC_PATH     = ENV['ETHEREUM_NODE_RPC_PATH']     || '/'.freeze
-HTTP_THREAD_COUNT          = ENV['HTTP_THREAD_COUNT'] || 25
+HTTP_THREAD_COUNT          = ENV['HTTP_THREAD_COUNT']          || 25
 
 # README:
 # If you’re using Infura.io for your host, you’ll need to get an API key from their website.
