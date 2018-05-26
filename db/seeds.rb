@@ -16,18 +16,11 @@ Setting.find_or_create_by name: 'raw_blocks_previous_synced_at_block_number' do 
                          blockchain again.'
 end
 
-# Get the latest RawBlock’s block_number in the database
-latest_raw_block_number = RawBlock.order(block_number: :desc).limit(1).first.block_number || 0
-
-# Get the count of RawBlocks from the database
-raw_blocks_count = RawBlock.count || 0
 
 puts
-puts "RawBlocks now in the database: #{RawBlock.count}"
-puts "Latest RawBlock block_number:  #{latest_raw_block_number}"
+puts "RawBlocks now in the database: #{BlockImporterService.raw_blocks_count}"
+puts "Latest RawBlock block_number:  #{BlockImporterService.latest_raw_block_number}"
 puts
-
-
 
 BlockImporterService.save_in_sync_block_number
 
@@ -35,10 +28,6 @@ BlockImporterService.save_in_sync_block_number
 # Set the lowest block number to be fetched
 last_in_sync_block_number  = Setting.find_by(name: 'raw_blocks_previous_synced_at_block_number').content
 lowest_block_number_needed = last_in_sync_block_number.to_i + 1
-
-# Get latest block number from the blockchain
-latest_block_number = BlockImporterService.web3.eth.blockNumber
-
 
 # Use our own thread pool
 pool = Concurrent::ThreadPoolExecutor.new(
@@ -52,7 +41,7 @@ pool = Concurrent::ThreadPoolExecutor.new(
 
 
 # Work through the blockchain in groups of blocks at a time
-latest_block_number.downto(lowest_block_number_needed).each_slice(HTTP_THREAD_COUNT) do |block_numbers|
+BlockImporterService.latest_block_number.downto(lowest_block_number_needed).each_slice(HTTP_THREAD_COUNT) do |block_numbers|
   # Create all of the promisess of work to do: get a block, save it to the database
   promises = []
 
@@ -75,7 +64,7 @@ latest_block_number.downto(lowest_block_number_needed).each_slice(HTTP_THREAD_CO
   promises.map { |p| p.value }
 
   puts
-  puts "RawBlocks now in the database: #{RawBlock.count}"
+  puts "RawBlocks now in the database: #{BlockImporterService.raw_blocks_count}"
 
   BlockImporterService.save_in_sync_block_number
 end
@@ -83,6 +72,6 @@ end
 
 puts
 puts "When in sync, latest block number is -1 of RawBlocks count"
-puts "RawBlocks now in the database:                 #{RawBlock.count}"
-puts "Latest block on blockchain (at start of sync): #{latest_block_number}"
+puts "RawBlocks now in the database:                 #{BlockImporterService.raw_blocks_count}"
+puts "Latest block on blockchain (at start of sync): #{BlockImporterService.latest_block_number}"
 puts

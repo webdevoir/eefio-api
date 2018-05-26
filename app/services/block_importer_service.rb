@@ -26,13 +26,22 @@ class BlockImporterService
                          }
     end
 
-    def save_in_sync_block_number
-      # Get the count of RawBlocks from the database
-      raw_blocks_count = RawBlock.count || 0
+    def latest_block_number
+      # Get latest block number from the blockchain
+      @latest_block_number ||= BlockImporterService.web3.eth.blockNumber
+    end
 
+    def latest_raw_block_number
       # Get the latest RawBlock’s block_number in the database
-      latest_raw_block_number = RawBlock.order(block_number: :desc).limit(1).first.block_number || 0
+      RawBlock.order(block_number: :desc).limit(1).first.block_number || 0
+    end
 
+    def raw_blocks_count
+      # Get the count of RawBlocks from the database
+      RawBlock.count || 0
+    end
+
+    def save_in_sync_block_number
       # Update last synced block number setting.
       # The +1 is because the first block is 0.
       # Eg, If latest_raw_block_number is 2. The database will have be RawBlocks: 0, 1, 2.
