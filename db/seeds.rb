@@ -1,6 +1,6 @@
 require 'concurrent'
 
-HTTP_THREAD_COUNT = ENV['HTTP_THREAD_COUNT'].to_i || 100
+HTTP_THREAD_COUNT = (ENV['HTTP_THREAD_COUNT'].to_i || 100).freeze
 
 # Add a setting to save the block_number of the last known place
 # where the database was in sync with the blockchain
