@@ -1,5 +1,15 @@
 require 'concurrent'
 
+# TODO: move out seeds to a better place
+def update_raw_blocks_previous_synced_at_block_number_setting! block_number:
+  setting = Setting.find_by name: 'raw_blocks_previous_synced_at_block_number'
+  setting.update content: block_number
+end
+
+# README:
+# If you’re using Infura.io for your host, you’ll need to get an API key from their website.
+# Your Infura API key then needs to go into your .env file with a leading slash. For example:
+#     ETHEREUM_NODE_RPC_PATH = /1e8cfBC369ADDc93d135
 # Setup in your .env file at the root of this Rails apps
 ETHEREUM_NODE_HOST         = ENV['ETHEREUM_NODE_HOST']         || 'mainnet.infura.io'.freeze
 ETHEREUM_NODE_PORT         = ENV['ETHEREUM_NODE_PORT']         || 443
@@ -9,10 +19,21 @@ ETHEREUM_NODE_USE_SSL      = ENV['ETHEREUM_NODE_USE_SSL']      || true
 ETHEREUM_NODE_RPC_PATH     = ENV['ETHEREUM_NODE_RPC_PATH']     || '/'.freeze
 HTTP_THREAD_COUNT          = ENV['HTTP_THREAD_COUNT'].to_i     || 100
 
-# README:
-# If you’re using Infura.io for your host, you’ll need to get an API key from their website.
-# Your Infura API key then needs to go into your .env file with a leading slash. For example:
-#     ETHEREUM_NODE_RPC_PATH = /1e8cfBC369ADDc93d135
+
+# Add a setting to save the block_number of the last known place
+# where the database was in sync with the blockchain
+Setting.find_or_create_by name: 'raw_blocks_previous_synced_at_block_number' do |setting|
+  setting.content     = 0
+  setting.data_type   = 'Integer'
+  setting.description = 'When the database has the same number of RawBlocks as the largest
+                         `block_number` (minus one) in the `raw_blocks` table, then the table
+                         is in sync with the blockchain. At least, up to that `block_number`.
+                         When that moment happens, this `Setting` gets updated to that that
+                         `block_number`. That way, future jobs will know to never search below
+                         that `block_number` for missing blocks when trying to sync with the
+                         blockchain again.'
+end
+
 
 # Connect to the Ethereum node via Web3 / RPC
 web3 = Web3::Eth::Rpc.new host: ETHEREUM_NODE_HOST,
@@ -25,20 +46,28 @@ web3 = Web3::Eth::Rpc.new host: ETHEREUM_NODE_HOST,
                           }
 
 # Get the latest block’s number
-latest_block_number = web3.eth.blockNumber
+# latest_block_number = web3.eth.blockNumber
+# TEMP: testing
+latest_raw_block_number = RawBlock.order(block_number: :desc).limit(1).first.block_number
 
 # Get the latest RawBlock from the database
 raw_blocks_count = RawBlock.count || 0
 
-puts "latest_block_number: #{latest_block_number}"
-puts "raw_blocks_count:    #{raw_blocks_count}"
+puts
+puts "Latest RawBlock block_number: #{latest_raw_block_number}"
+puts "Current RawBlocks count:      #{raw_blocks_count}"
 
 # Exit if the database is synced up with the blockchain
 # The +1 is because the first block is 0.
 # Eg, If latest_block_number is 2. The database will have be RawBlocks: 0, 1, 2.
-if raw_blocks_count == (latest_block_number + 1)
-  puts "RawBlocks synced with Ethereum blockchain!"
-  exit 0
+if raw_blocks_count == (latest_raw_block_number + 1)
+  puts
+  puts 'RawBlocks synced with Ethereum blockchain!'
+  puts "Updating Setting"
+  puts "==> raw_blocks_previous_synced_at_block_number: #{latest_raw_block_number}"
+  puts
+
+  update_raw_blocks_previous_synced_at_block_number_setting! block_number: latest_raw_block_number
 end
 
 # Setup the number of the next block to import
