@@ -29,24 +29,13 @@ BlockImporterService.save_in_sync_block_number
 last_in_sync_block_number  = Setting.find_by(name: 'raw_blocks_previous_synced_at_block_number').content
 lowest_block_number_needed = last_in_sync_block_number.to_i + 1
 
-# Use our own thread pool
-pool = Concurrent::ThreadPoolExecutor.new(
-         min_threads:     [2, Concurrent.processor_count].max,
-         max_threads:     100,
-         auto_terminate:  true,
-         idletime:        60,    # 1 minute
-         max_queue:       0,     # unlimited
-         fallback_policy: :abort # shouldn't matter with '0 max queue'
-       )
-
-
 # Work through the blockchain in groups of blocks at a time
 BlockImporterService.latest_block_number.downto(lowest_block_number_needed).each_slice(HTTP_THREAD_COUNT) do |block_numbers|
   # Create all of the promisess of work to do: get a block, save it to the database
   promises = []
 
   block_numbers.each do |block_number|
-    promise = Concurrent::Promise.new(executor: pool) do
+    promise = Concurrent::Promise.new(executor: BlockImporterService.thread_pool_executor) do
       puts "==> Fetching block from chain: #{block_number}"
       block = BlockImporterService.web3.eth.getBlockByNumber block_number
 

@@ -15,14 +15,26 @@ class BlockImporterService
 
     # Connect to the Ethereum node via Web3 / RPC
     def web3
-      Web3::Eth::Rpc.new host: ETHEREUM_NODE_HOST,
-                         port: ETHEREUM_NODE_PORT,
-                         connect_options: {
-                           open_timeout: ETHEREUM_NODE_OPEN_TIMEOUT,
-                           read_timeout: ETHEREUM_NODE_READ_TIMEOUT,
-                           use_ssl:  ETHEREUM_NODE_USE_SSL,
-                           rpc_path: ETHEREUM_NODE_RPC_PATH
-                         }
+      @web3 ||= Web3::Eth::Rpc.new host: ETHEREUM_NODE_HOST,
+                                   port: ETHEREUM_NODE_PORT,
+                                   connect_options: {
+                                     open_timeout: ETHEREUM_NODE_OPEN_TIMEOUT,
+                                     read_timeout: ETHEREUM_NODE_READ_TIMEOUT,
+                                     use_ssl:  ETHEREUM_NODE_USE_SSL,
+                                     rpc_path: ETHEREUM_NODE_RPC_PATH
+                                   }
+    end
+
+    def thread_pool_executor
+      # Use our own thread pool
+      @thread_pool_executor = Concurrent::ThreadPoolExecutor.new(
+                                min_threads:     [2, Concurrent.processor_count].max,
+                                max_threads:     100,
+                                auto_terminate:  true,
+                                idletime:        60,    # 1 minute
+                                max_queue:       0,     # unlimited
+                                fallback_policy: :abort # shouldn't matter with '0 max queue'
+                              )
     end
 
     def latest_block_number
