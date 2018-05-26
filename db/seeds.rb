@@ -1,8 +1,31 @@
 require 'concurrent'
 
 # TODO: move out seeds to a better place
+def save_in_sync_block_number
+  # Get the count of RawBlocks from the database
+  raw_blocks_count = RawBlock.count || 0
+
+  # Get the latest RawBlock’s block_number in the database
+  latest_raw_block_number = RawBlock.order(block_number: :desc).limit(1).first.block_number || 0
+
+  # Update last synced block number setting.
+  # The +1 is because the first block is 0.
+  # Eg, If latest_raw_block_number is 2. The database will have be RawBlocks: 0, 1, 2.
+  if raw_blocks_count == (latest_raw_block_number + 1)
+    update_raw_blocks_previous_synced_at_block_number_setting! block_number: latest_raw_block_number
+  end
+end
+
+# TODO: move out seeds to a better place
 def update_raw_blocks_previous_synced_at_block_number_setting! block_number:
   setting = Setting.find_by name: 'raw_blocks_previous_synced_at_block_number'
+  return if setting.content.to_i == block_number
+
+  puts
+  puts "Updating Setting"
+  puts "==> raw_blocks_previous_synced_at_block_number: #{block_number}"
+  puts
+
   setting.update content: block_number
 end
 
@@ -45,34 +68,26 @@ web3 = Web3::Eth::Rpc.new host: ETHEREUM_NODE_HOST,
                             rpc_path: ETHEREUM_NODE_RPC_PATH
                           }
 
-# Get the latest block’s number
-# latest_block_number = web3.eth.blockNumber
-# TEMP: testing
-latest_raw_block_number = RawBlock.order(block_number: :desc).limit(1).first.block_number
+# Get the latest RawBlock’s block_number in the database
+latest_raw_block_number = RawBlock.order(block_number: :desc).limit(1).first.block_number || 0
 
-# Get the latest RawBlock from the database
+# Get the count of RawBlocks from the database
 raw_blocks_count = RawBlock.count || 0
 
 puts
 puts "Latest RawBlock block_number: #{latest_raw_block_number}"
 puts "Current RawBlocks count:      #{raw_blocks_count}"
+puts
 
-# Exit if the database is synced up with the blockchain
-# The +1 is because the first block is 0.
-# Eg, If latest_block_number is 2. The database will have be RawBlocks: 0, 1, 2.
-if raw_blocks_count == (latest_raw_block_number + 1)
-  puts
-  puts 'RawBlocks synced with Ethereum blockchain!'
-  puts "Updating Setting"
-  puts "==> raw_blocks_previous_synced_at_block_number: #{latest_raw_block_number}"
-  puts
+save_in_sync_block_number
 
-  update_raw_blocks_previous_synced_at_block_number_setting! block_number: latest_raw_block_number
-end
 
-# Setup the number of the next block to import
-# Fallback to 0 if there are no RawBlocks yet
-next_block_number = raw_blocks_count
+# Set the lowest block number to be fetched
+last_in_sync_block_number  = Setting.find_by(name: 'raw_blocks_previous_synced_at_block_number').content
+lowest_block_number_needed = last_in_sync_block_number.to_i + 1
+
+# Get latest block number from the blockchain
+latest_block_number = web3.eth.blockNumber
 
 
 # Use our own thread pool
@@ -87,32 +102,24 @@ pool = Concurrent::ThreadPoolExecutor.new(
 
 
 # Work through the blockchain in groups of blocks at a time
-(next_block_number..latest_block_number).each_slice(HTTP_THREAD_COUNT) do |block_numbers|
+latest_block_number.downto(lowest_block_number_needed).each_slice(HTTP_THREAD_COUNT) do |block_numbers|
   # Create all of the promisess of work to do: get a block, save it to the database
   promises = []
 
   block_numbers.each do |block_number|
-    puts block_number
-
     promise = Concurrent::Promise.new(executor: pool) do
-      raw_block = RawBlock.find_by block_number: block_number
+      puts "==> Fetching block from chain: #{block_number}"
+      block = web3.eth.getBlockByNumber block_number
 
-      if raw_block.present?
-        puts "RawBlock already exists: #{block_number}"
-      else
-        puts "==> Fetching block from chain: #{block_number}"
-        block = web3.eth.getBlockByNumber block_number
-
-        ActiveRecord::Base.connection_pool.with_connection do
-          # Save the block to the raw_blocks table in the database
-          raw_block = RawBlock.create block_number: block.block_number, content: block.raw_data.to_json
-          puts "    Saved block: #{raw_block.block_number}"
-        end
-
+      ActiveRecord::Base.connection_pool.with_connection do
+        # Save the block to the raw_blocks table in the database
+        raw_block = RawBlock.create block_number: block.block_number, content: block.raw_data.to_json
+        puts "+++ Saved block: #{raw_block.block_number}"
       end
 
-      promises << promise.execute
     end
+
+    promises << promise.execute
   end
 
   # Do the work in all of the promises: get a block, save it to the database
@@ -120,36 +127,8 @@ pool = Concurrent::ThreadPoolExecutor.new(
 
   puts
   puts "RawBlocks now in the database: #{RawBlock.count}"
-  puts
-end
 
-
-puts
-puts "Latest block on blockchain (at start of sync): #{latest_block_number}"
-puts "RawBlocks now in the database:                 #{RawBlock.count}"
-puts
-
-exit
-
-puts "Checking for missing blocks and re-fetching them"
-latest_raw_block = RawBlock.order(block_number: :desc).limit(1).first
-if latest_raw_block.block_number > RawBlock.count
-  (0..latest_block_number).each do |block_number|
-    raw_block = RawBlock.find_by block_number: block_number
-
-    if raw_block.present?
-      puts "RawBlock already exists: #{block_number}"
-    else
-      puts "==> Fetching block from chain: #{block_number}"
-      block = web3.eth.getBlockByNumber block_number
-
-      ActiveRecord::Base.connection_pool.with_connection do
-        # Save the block to the raw_blocks table in the database
-        raw_block = RawBlock.create block_number: block.block_number, content: block.raw_data.to_json
-        puts "    Saved block: #{raw_block.block_number}"
-      end
-    end
-  end
+  save_in_sync_block_number
 end
 
 
