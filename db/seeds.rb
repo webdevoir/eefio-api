@@ -1,34 +1,5 @@
 require 'concurrent'
 
-# TODO: move out seeds to a better place
-def save_in_sync_block_number
-  # Get the count of RawBlocks from the database
-  raw_blocks_count = RawBlock.count || 0
-
-  # Get the latest RawBlock’s block_number in the database
-  latest_raw_block_number = RawBlock.order(block_number: :desc).limit(1).first.block_number || 0
-
-  # Update last synced block number setting.
-  # The +1 is because the first block is 0.
-  # Eg, If latest_raw_block_number is 2. The database will have be RawBlocks: 0, 1, 2.
-  if raw_blocks_count == (latest_raw_block_number + 1)
-    update_raw_blocks_previous_synced_at_block_number_setting! block_number: latest_raw_block_number
-  end
-end
-
-# TODO: move out seeds to a better place
-def update_raw_blocks_previous_synced_at_block_number_setting! block_number:
-  setting = Setting.find_by name: 'raw_blocks_previous_synced_at_block_number'
-  return if setting.content.to_i == block_number
-
-  puts
-  puts "Updating Setting"
-  puts "==> raw_blocks_previous_synced_at_block_number: #{block_number}"
-  puts
-
-  setting.update content: block_number
-end
-
 # README:
 # If you’re using Infura.io for your host, you’ll need to get an API key from their website.
 # Your Infura API key then needs to go into your .env file with a leading slash. For example:
@@ -75,11 +46,13 @@ latest_raw_block_number = RawBlock.order(block_number: :desc).limit(1).first.blo
 raw_blocks_count = RawBlock.count || 0
 
 puts
-puts "Latest RawBlock block_number: #{latest_raw_block_number}"
-puts "Current RawBlocks count:      #{raw_blocks_count}"
+puts "RawBlocks now in the database: #{RawBlock.count}"
+puts "Latest RawBlock block_number:  #{latest_raw_block_number}"
 puts
 
-save_in_sync_block_number
+
+
+BlockImporter.save_in_sync_block_number
 
 
 # Set the lowest block number to be fetched
@@ -128,11 +101,12 @@ latest_block_number.downto(lowest_block_number_needed).each_slice(HTTP_THREAD_CO
   puts
   puts "RawBlocks now in the database: #{RawBlock.count}"
 
-  save_in_sync_block_number
+  BlockImporter.save_in_sync_block_number
 end
 
 
 puts
-puts "Latest block on blockchain (at start of sync): #{latest_block_number}"
+puts "When in sync, latest block number is -1 of RawBlocks count"
 puts "RawBlocks now in the database:                 #{RawBlock.count}"
+puts "Latest block on blockchain (at start of sync): #{latest_block_number}"
 puts
