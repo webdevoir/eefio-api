@@ -29,7 +29,7 @@ puts
 
 
 
-BlockImporter.save_in_sync_block_number
+BlockImporterService.save_in_sync_block_number
 
 
 # Set the lowest block number to be fetched
@@ -37,7 +37,7 @@ last_in_sync_block_number  = Setting.find_by(name: 'raw_blocks_previous_synced_a
 lowest_block_number_needed = last_in_sync_block_number.to_i + 1
 
 # Get latest block number from the blockchain
-latest_block_number = BlockImporter.web3.eth.blockNumber
+latest_block_number = BlockImporterService.web3.eth.blockNumber
 
 
 # Use our own thread pool
@@ -59,14 +59,13 @@ latest_block_number.downto(lowest_block_number_needed).each_slice(HTTP_THREAD_CO
   block_numbers.each do |block_number|
     promise = Concurrent::Promise.new(executor: pool) do
       puts "==> Fetching block from chain: #{block_number}"
-      block = BlockImporter.web3.eth.getBlockByNumber block_number
+      block = BlockImporterService.web3.eth.getBlockByNumber block_number
 
       ActiveRecord::Base.connection_pool.with_connection do
         # Save the block to the raw_blocks table in the database
         raw_block = RawBlock.create block_number: block.block_number, content: block.raw_data.to_json
         puts "+++ Saved block: #{raw_block.block_number}"
       end
-
     end
 
     promises << promise.execute
@@ -78,7 +77,7 @@ latest_block_number.downto(lowest_block_number_needed).each_slice(HTTP_THREAD_CO
   puts
   puts "RawBlocks now in the database: #{RawBlock.count}"
 
-  BlockImporter.save_in_sync_block_number
+  BlockImporterService.save_in_sync_block_number
 end
 
 
