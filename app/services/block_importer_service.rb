@@ -1,4 +1,4 @@
-class BlockImporter
+class BlockImporterService
   class << self
 
     # README:
