@@ -1,18 +1,6 @@
 require 'concurrent'
 
-# README:
-# If you’re using Infura.io for your host, you’ll need to get an API key from their website.
-# Your Infura API key then needs to go into your .env file with a leading slash. For example:
-#     ETHEREUM_NODE_RPC_PATH = /1e8cfBC369ADDc93d135
-# Setup in your .env file at the root of this Rails apps
-ETHEREUM_NODE_HOST         = ENV['ETHEREUM_NODE_HOST']         || 'mainnet.infura.io'.freeze
-ETHEREUM_NODE_PORT         = ENV['ETHEREUM_NODE_PORT']         || 443
-ETHEREUM_NODE_OPEN_TIMEOUT = ENV['ETHEREUM_NODE_OPEN_TIMEOUT'] || 20
-ETHEREUM_NODE_READ_TIMEOUT = ENV['ETHEREUM_NODE_READ_TIMEOUT'] || 140
-ETHEREUM_NODE_USE_SSL      = ENV['ETHEREUM_NODE_USE_SSL']      || true
-ETHEREUM_NODE_RPC_PATH     = ENV['ETHEREUM_NODE_RPC_PATH']     || '/'.freeze
-HTTP_THREAD_COUNT          = ENV['HTTP_THREAD_COUNT'].to_i     || 100
-
+HTTP_THREAD_COUNT = ENV['HTTP_THREAD_COUNT'].to_i || 100
 
 # Add a setting to save the block_number of the last known place
 # where the database was in sync with the blockchain
@@ -27,17 +15,6 @@ Setting.find_or_create_by name: 'raw_blocks_previous_synced_at_block_number' do 
                          that `block_number` for missing blocks when trying to sync with the
                          blockchain again.'
 end
-
-
-# Connect to the Ethereum node via Web3 / RPC
-web3 = Web3::Eth::Rpc.new host: ETHEREUM_NODE_HOST,
-                          port: ETHEREUM_NODE_PORT,
-                          connect_options: {
-                            open_timeout: ETHEREUM_NODE_OPEN_TIMEOUT,
-                            read_timeout: ETHEREUM_NODE_READ_TIMEOUT,
-                            use_ssl:  ETHEREUM_NODE_USE_SSL,
-                            rpc_path: ETHEREUM_NODE_RPC_PATH
-                          }
 
 # Get the latest RawBlock’s block_number in the database
 latest_raw_block_number = RawBlock.order(block_number: :desc).limit(1).first.block_number || 0
@@ -60,7 +37,7 @@ last_in_sync_block_number  = Setting.find_by(name: 'raw_blocks_previous_synced_a
 lowest_block_number_needed = last_in_sync_block_number.to_i + 1
 
 # Get latest block number from the blockchain
-latest_block_number = web3.eth.blockNumber
+latest_block_number = BlockImporter.web3.eth.blockNumber
 
 
 # Use our own thread pool
@@ -82,7 +59,7 @@ latest_block_number.downto(lowest_block_number_needed).each_slice(HTTP_THREAD_CO
   block_numbers.each do |block_number|
     promise = Concurrent::Promise.new(executor: pool) do
       puts "==> Fetching block from chain: #{block_number}"
-      block = web3.eth.getBlockByNumber block_number
+      block = BlockImporter.web3.eth.getBlockByNumber block_number
 
       ActiveRecord::Base.connection_pool.with_connection do
         # Save the block to the raw_blocks table in the database
