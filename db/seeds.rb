@@ -12,3 +12,8 @@ Setting.find_or_create_by name: 'raw_blocks_previous_synced_at_block_number' do 
                          that `block_number` for missing blocks when trying to sync with the
                          blockchain again.'
 end
+
+
+puts 'All done.'
+puts 'Next, run:'
+puts '    rake blockchain:sync'
