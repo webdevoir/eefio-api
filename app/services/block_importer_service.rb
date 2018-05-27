@@ -21,30 +21,38 @@ class BlockImporterService
       starting_block_number.upto(ending_block_number).each_slice(HTTP_THREAD_COUNT) do |block_numbers|
         # Create all of the promisess of work to do: get a block, save it to the database
         promises = []
-
-        block_numbers.each do |block_number|
-          promise = Concurrent::Promise.new(executor: thread_pool_executor) do
-            puts "==> Fetching block from chain: #{block_number}"
-            block = web3.eth.getBlockByNumber block_number
-
-            ActiveRecord::Base.connection_pool.with_connection do
-              # Save the block to the raw_blocks table in the database
-              raw_block = RawBlock.create block_number: block.block_number, content: block.raw_data.to_json
-              puts "+++ Saved block: #{raw_block.block_number}"
-            end
-          end
-
-          promises << promise.execute
-        end
+        promises = block_numbers.map { |block_number| promise_to_create_raw_block block_number }
 
         # Do the work in all of the promises: get a block, save it to the database
-        promises.map { |p| p.value }
+        promises.map(&:value)
 
         puts
         puts "RawBlocks now in the database: #{raw_blocks_count}"
 
         save_in_sync_block_number
       end
+    end
+
+    def get_block_from_blockchain block_number:
+      puts "==> Fetching block from chain: #{block_number}"
+      web3.eth.getBlockByNumber block_number
+    end
+
+    def create_raw_block_from block:
+      ActiveRecord::Base.connection_pool.with_connection do
+        # Save the block to the raw_blocks table in the database
+        raw_block = RawBlock.create block_number: block.block_number, content: block.raw_data.to_json
+        puts "+++ Saved block: #{raw_block.block_number}"
+      end
+    end
+
+    def promise_to_create_raw_block block_number
+      promise = Concurrent::Promise.new(executor: thread_pool_executor) do
+        block = get_block_from_blockchain block_number: block_number
+        create_raw_block_from block: block
+      end
+
+      promise.execute
     end
 
     def latest_block_number
