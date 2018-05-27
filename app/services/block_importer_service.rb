@@ -1,6 +1,5 @@
 class BlockImporterService
   class << self
-
     # README:
     # If you’re using Infura.io for your host, you’ll need to get an API key from their website.
     # Your Infura API key then needs to go into your .env file with a leading slash. For example:
@@ -15,29 +14,6 @@ class BlockImporterService
     HTTP_THREAD_COUNT          = (ENV['HTTP_THREAD_COUNT'].to_i     || 100).freeze
 
     # Connect to the Ethereum node via Web3 / RPC
-    def web3
-      @web3 ||= Web3::Eth::Rpc.new host: ETHEREUM_NODE_HOST,
-                                   port: ETHEREUM_NODE_PORT,
-                                   connect_options: {
-                                     open_timeout: ETHEREUM_NODE_OPEN_TIMEOUT,
-                                     read_timeout: ETHEREUM_NODE_READ_TIMEOUT,
-                                     use_ssl:  ETHEREUM_NODE_USE_SSL,
-                                     rpc_path: ETHEREUM_NODE_RPC_PATH
-                                   }
-    end
-
-    def thread_pool_executor
-      # Use our own thread pool
-      @thread_pool_executor = Concurrent::ThreadPoolExecutor.new(
-                                min_threads:     [2, Concurrent.processor_count].max,
-                                max_threads:     100,
-                                auto_terminate:  true,
-                                idletime:        60,    # 1 minute
-                                max_queue:       0,     # unlimited
-                                fallback_policy: :abort # shouldn't matter with '0 max queue'
-                              )
-    end
-
     def get_blocks_from_blockchain starting_block_number:, ending_block_number: nil
       ending_block_number = latest_block_number if ending_block_number.blank?
 
@@ -95,6 +71,18 @@ class BlockImporterService
       end
     end
 
+    def thread_pool_executor
+      # Use our own thread pool
+      @thread_pool_executor = Concurrent::ThreadPoolExecutor.new(
+                                min_threads:     [2, Concurrent.processor_count].max,
+                                max_threads:     100,
+                                auto_terminate:  true,
+                                idletime:        60,    # 1 minute
+                                max_queue:       0,     # unlimited
+                                fallback_policy: :abort # shouldn't matter with '0 max queue'
+                              )
+    end
+
     def update_raw_blocks_previous_synced_at_block_number_setting! block_number:
       setting = Setting.find_by name: 'raw_blocks_previous_synced_at_block_number'
       return if setting.content.to_i == block_number
@@ -107,5 +95,15 @@ class BlockImporterService
       setting.update content: block_number
     end
 
+    def web3
+      @web3 ||= Web3::Eth::Rpc.new host: ETHEREUM_NODE_HOST,
+                                   port: ETHEREUM_NODE_PORT,
+                                   connect_options: {
+                                     open_timeout: ETHEREUM_NODE_OPEN_TIMEOUT,
+                                     read_timeout: ETHEREUM_NODE_READ_TIMEOUT,
+                                     use_ssl:  ETHEREUM_NODE_USE_SSL,
+                                     rpc_path: ETHEREUM_NODE_RPC_PATH
+                                   }
+    end
   end
 end
