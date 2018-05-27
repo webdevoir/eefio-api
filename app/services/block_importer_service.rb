@@ -39,7 +39,7 @@ class BlockImporterService
     end
 
     def get_blocks_from_blockchain starting_block_number:, ending_block_number: nil
-      ending_block_number = BlockImporterService.latest_block_number if ending_block_number.blank?
+      ending_block_number = latest_block_number if ending_block_number.blank?
 
       # Work through the blockchain in groups of blocks at a time
       starting_block_number.upto(ending_block_number).each_slice(HTTP_THREAD_COUNT) do |block_numbers|
@@ -47,9 +47,9 @@ class BlockImporterService
         promises = []
 
         block_numbers.each do |block_number|
-          promise = Concurrent::Promise.new(executor: BlockImporterService.thread_pool_executor) do
+          promise = Concurrent::Promise.new(executor: thread_pool_executor) do
             puts "==> Fetching block from chain: #{block_number}"
-            block = BlockImporterService.web3.eth.getBlockByNumber block_number
+            block = web3.eth.getBlockByNumber block_number
 
             ActiveRecord::Base.connection_pool.with_connection do
               # Save the block to the raw_blocks table in the database
@@ -65,15 +65,15 @@ class BlockImporterService
         promises.map { |p| p.value }
 
         puts
-        puts "RawBlocks now in the database: #{BlockImporterService.raw_blocks_count}"
+        puts "RawBlocks now in the database: #{raw_blocks_count}"
 
-        BlockImporterService.save_in_sync_block_number
+        save_in_sync_block_number
       end
     end
 
     def latest_block_number
       # Get latest block number from the blockchain
-      @latest_block_number ||= BlockImporterService.web3.eth.blockNumber
+      @latest_block_number ||= web3.eth.blockNumber
     end
 
     def latest_raw_block_number
