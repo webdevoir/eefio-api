@@ -12,6 +12,7 @@ class BlockImporterService
     ETHEREUM_NODE_READ_TIMEOUT = (ENV['ETHEREUM_NODE_READ_TIMEOUT'] || 140).freeze
     ETHEREUM_NODE_USE_SSL      = (ENV['ETHEREUM_NODE_USE_SSL']      || true).freeze
     ETHEREUM_NODE_RPC_PATH     = (ENV['ETHEREUM_NODE_RPC_PATH']     || '/').freeze
+    HTTP_THREAD_COUNT          = (ENV['HTTP_THREAD_COUNT'].to_i     || 100).freeze
 
     # Connect to the Ethereum node via Web3 / RPC
     def web3
@@ -35,6 +36,39 @@ class BlockImporterService
                                 max_queue:       0,     # unlimited
                                 fallback_policy: :abort # shouldn't matter with '0 max queue'
                               )
+    end
+
+    def get_blocks_from_blockchain starting_block_number:
+      ending_block_number = BlockImporterService.latest_block_number
+
+      # Work through the blockchain in groups of blocks at a time
+      starting_block_number.upto(ending_block_number).each_slice(HTTP_THREAD_COUNT) do |block_numbers|
+        # Create all of the promisess of work to do: get a block, save it to the database
+        promises = []
+
+        block_numbers.each do |block_number|
+          promise = Concurrent::Promise.new(executor: BlockImporterService.thread_pool_executor) do
+            puts "==> Fetching block from chain: #{block_number}"
+            block = BlockImporterService.web3.eth.getBlockByNumber block_number
+
+            ActiveRecord::Base.connection_pool.with_connection do
+              # Save the block to the raw_blocks table in the database
+              raw_block = RawBlock.create block_number: block.block_number, content: block.raw_data.to_json
+              puts "+++ Saved block: #{raw_block.block_number}"
+            end
+          end
+
+          promises << promise.execute
+        end
+
+        # Do the work in all of the promises: get a block, save it to the database
+        promises.map { |p| p.value }
+
+        puts
+        puts "RawBlocks now in the database: #{BlockImporterService.raw_blocks_count}"
+
+        BlockImporterService.save_in_sync_block_number
+      end
     end
 
     def latest_block_number
