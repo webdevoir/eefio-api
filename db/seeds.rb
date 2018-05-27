@@ -1,5 +1,3 @@
-require 'concurrent'
-
 # Add a setting to save the block_number of the last known place
 # where the database was in sync with the blockchain
 puts 'Creating Setting: raw_blocks_previous_synced_at_block_number'
