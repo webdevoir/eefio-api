@@ -30,7 +30,7 @@ last_in_sync_block_number  = Setting.find_by(name: 'raw_blocks_previous_synced_a
 lowest_block_number_needed = last_in_sync_block_number.to_i + 1
 
 # Work through the blockchain in groups of blocks at a time
-BlockImporterService.latest_block_number.downto(lowest_block_number_needed).each_slice(HTTP_THREAD_COUNT) do |block_numbers|
+lowest_block_number_needed.upto(BlockImporterService.latest_block_number).each_slice(HTTP_THREAD_COUNT) do |block_numbers|
   # Create all of the promisess of work to do: get a block, save it to the database
   promises = []
 
