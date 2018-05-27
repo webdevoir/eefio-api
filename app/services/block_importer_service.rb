@@ -38,8 +38,8 @@ class BlockImporterService
                               )
     end
 
-    def get_blocks_from_blockchain starting_block_number:
-      ending_block_number = BlockImporterService.latest_block_number
+    def get_blocks_from_blockchain starting_block_number:, ending_block_number: nil
+      ending_block_number = BlockImporterService.latest_block_number if ending_block_number.blank?
 
       # Work through the blockchain in groups of blocks at a time
       starting_block_number.upto(ending_block_number).each_slice(HTTP_THREAD_COUNT) do |block_numbers|
