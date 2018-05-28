@@ -19,7 +19,7 @@ json.data do
     json.nonce_in_hex @block.nonce_in_hex
     json.parent_block_address @block.parent_block_address
     json.published_at @block.published_at
-    json.published_at_in_hex @block.published_at_in_hex
+    json.published_at_in_seconds_since_epoch_in_hex @block.published_at_in_seconds_since_epoch_in_hex
     json.published_at_in_seconds_since_epoch @block.published_at_in_seconds_since_epoch.to_i
     json.receipts_root_address @block.receipts_root_address
     json.sha3_uncles @block.sha3_uncles
