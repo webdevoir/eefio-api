@@ -1,3 +1,3 @@
 Rails.application.routes.draw do
-  # For details on the DSL available within this file, see http://guides.rubyonrails.org/routing.html
+  get 'blocks/latest', to: 'blocks#show_latest', as: :latest_block
 end
