@@ -1,3 +1,5 @@
+json.prettify!
+
 json.data do
   json.block do
     json.address @block.address
