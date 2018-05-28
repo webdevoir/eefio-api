@@ -33,7 +33,7 @@ ActiveRecord::Schema.define(version: 2018_05_27_010105) do
     t.string "nonce_in_hex"
     t.text "parent_block_address"
     t.datetime "published_at"
-    t.string "published_at_in_hex"
+    t.string "published_at_in_seconds_since_epoch_in_hex"
     t.decimal "published_at_in_seconds_since_epoch"
     t.text "receipts_root_address"
     t.text "sha3_uncles"
