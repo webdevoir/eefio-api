@@ -1,32 +1,33 @@
 class CreateBlocks < ActiveRecord::Migration[5.2]
   def change
     create_table :blocks do |t|
-      t.text :address
-      t.bigint :block_number, limit: 8
-      t.string :block_number_in_hex
-      t.bigint :difficulty, limit: 8
+      t.text :address, uniq: true
+      t.decimal :block_number, uniq: true
+      t.string :block_number_in_hex, uniq: true
+      t.decimal :difficulty
       t.string :difficulty_in_hex
       t.text :extra_data
-      t.bigint :gas_limit, limit: 8
+      t.decimal :gas_limit
       t.string :gas_limit_in_hex
-      t.bigint :gas_used, limit: 8
+      t.decimal :gas_used
       t.string :gas_used_in_hex
       t.text :logs_bloom
       t.text :miner_address
       t.text :mix_hash
-      t.bigint :nonce, limit: 8
+      t.decimal :nonce
       t.string :nonce_in_hex
       t.text :parent_block_address
       t.datetime :published_at
       t.string :published_at_in_hex
-      t.text :receipts_root
+      t.decimal :published_at_in_seconds_since_epoch
+      t.text :receipts_root_address
       t.text :sha3_uncles
-      t.bigint :size_in_bytes, limit: 8
-      t.string :size_in_hex
-      t.text :state_root
-      t.bigint :total_difficulty, limit: 8
+      t.decimal :size_in_bytes
+      t.string :size_in_bytes_in_hex
+      t.text :state_root_address
+      t.decimal :total_difficulty
       t.string :total_difficulty_in_hex
-      t.text :transactions_root
+      t.text :transactions_root_address
       t.string :uncles
 
       t.timestamps
