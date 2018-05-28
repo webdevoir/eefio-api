@@ -19,55 +19,57 @@ class BlockExtractorService
     def extract_block_from raw_block:
       # Work with just the RawBlock’s content JSON blob
       raw_block = JSON.parse(raw_block.content).with_indifferent_access
-      puts raw_block
 
+      # Create a new empty Block object
       block = Block.new
 
-      block.address = raw_block[:hash]
+      # Keys (on the left) are Block attributes (columns in the database on the blocks table)
+      # Values (on the right) are RawBlock.content attributes (keys in the JSON blob)
+      # Walk with each pair and save the value from the JSON blob into the new Block object
+      {
+        address:                   :hash,
+        block_number_in_hex:       :number,
+        difficulty_in_hex:         :difficulty,
+        extra_data:                :extraData,
+        gas_limit_in_hex:          :gasLimit,
+        gas_used_in_hex:           :gasUsed,
+        logs_bloom:                :logsBloom,
+        miner_address:             :miner,
+        mix_hash:                  :mixHash,
+        nonce_in_hex:              :nonce,
+        parent_block_address:      :parentHash,
+        published_at_in_hex:       :timestamp,
+        receipts_root_address:     :receiptsRoot,
+        sha3_uncles:               :sha3Uncles,
+        size_in_bytes_in_hex:      :size,
+        state_root_address:        :stateRoot,
+        total_difficulty_in_hex:   :totalDifficulty,
+        transactions_root_address: :transactionsRoot,
+        uncles:                    :uncles
+      }.each do |block_attr, raw_block_attr|
+        block.send("#{block_attr}=", raw_block[raw_block_attr])
+      end
 
-      block.block_number        = raw_block[:number].from_hex
-      block.block_number_in_hex = raw_block[:number]
+      # Keys (on the left) are Block attributes (columns in the database on the blocks table)
+      # Values (on the right) are RawBlock.content attributes (keys in the JSON blob)
+      # Walk with each pair and save the value from the JSON blob into the new Block object
+      {
+        block_number:                        :number,
+        difficulty:                          :difficulty,
+        gas_limit:                           :gasLimit,
+        gas_used:                            :gasUsed,
+        nonce:                               :nonce,
+        published_at_in_seconds_since_epoch: :timestamp,
+        size_in_bytes:                       :size,
+        total_difficulty:                    :totalDifficulty,
+      }.each do |block_attr, raw_block_attr|
+        block.send("#{block_attr}=", raw_block[raw_block_attr].from_hex)
+      end
 
-      block.difficulty        = raw_block[:difficulty].from_hex
-      block.difficulty_in_hex = raw_block[:difficulty]
+      # Block#published_at is a special case because it’s store as DateTime object
+      block.published_at = Time.at raw_block[:timestamp].from_hex
 
-      block.extra_data = raw_block[:extraData]
-
-      block.gas_limit        = raw_block[:gasLimit].from_hex
-      block.gas_limit_in_hex = raw_block[:gasLimit]
-
-      block.gas_used        = raw_block[:gasUsed].from_hex
-      block.gas_used_in_hex = raw_block[:gasUsed]
-
-      block.logs_bloom = raw_block[:logsBloom]
-
-      block.miner_address = raw_block[:miner]
-      block.mix_hash = raw_block[:mixHash]
-
-      block.nonce        = raw_block[:nonce].from_hex
-      block.nonce_in_hex = raw_block[:nonce]
-
-      block.parent_block_address = raw_block[:parentHash]
-
-      block.published_at                        = Time.at raw_block[:timestamp].from_hex
-      block.published_at_in_hex                 = raw_block[:timestamp]
-      block.published_at_in_seconds_since_epoch = raw_block[:timestamp].from_hex
-
-      block.receipts_root_address = raw_block[:receiptsRoot]
-      block.sha3_uncles   = raw_block[:sha3Uncles]
-
-      block.size_in_bytes        = raw_block[:size].from_hex
-      block.size_in_bytes_in_hex = raw_block[:size]
-
-      block.state_root_address = raw_block[:stateRoot]
-
-      block.total_difficulty        = raw_block[:totalDifficulty].from_hex
-      block.total_difficulty_in_hex = raw_block[:totalDifficulty]
-
-      block.transactions_root_address = raw_block[:transactionsRoot]
-      block.uncles = raw_block[:uncles]
-
-      pp block
+      # Save the Block to the database
       block.save
     end
   end

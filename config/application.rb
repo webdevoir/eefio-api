@@ -31,5 +31,9 @@ module EthioAPI
     # Middleware like session, flash, cookies can be added back manually.
     # Skip views, helpers and assets when generating a new resource.
     config.api_only = true
+
+    # TODO: Why do neither of these autoload String.rb and Integer.rb from /app/lib?
+    # config.autoload_paths += [[Rails.root, 'app', 'lib'].join('/')]
+    # config.autoload_paths += ["#{Rails.root}/app/lib"]
   end
 end
