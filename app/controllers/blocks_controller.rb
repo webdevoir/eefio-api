@@ -1,15 +1,24 @@
 class BlocksController < ApplicationController
   def show
-    @block =
-      if params[:id].strip.downcase == 'latest'
-        Block.order(block_number: :desc).limit(1).first
-      elsif params[:id].strip.downcase[0..1] == '0x'
-        Block.find_by(address: params[:id])
-      else
-        Block.find_by(block_number: params[:id])
-      end
-  end
+    id = params[:id].strip.downcase
 
-  def index
+    @identifier =
+      if id == 'latest'
+        :latest
+      elsif id[0..1] == '0x'
+        :address
+      else
+        :block_number
+      end
+
+    @block =
+      case @identifier
+      when :latest
+        Block.order(block_number: :desc).limit(1).first
+      when :address
+        Block.find_by address: params[:id]
+      when :block_number
+        Block.find_by block_number: params[:id]
+      end
   end
 end

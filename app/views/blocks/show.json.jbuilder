@@ -1,5 +1,9 @@
 json.prettify!
 
+json.links do
+  json.merge! @block.links identifier: @identifier
+end
+
 json.data do
   json.block do
     json.address @block.address
