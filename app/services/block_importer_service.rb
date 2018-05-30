@@ -13,18 +13,30 @@ class BlockImporterService
     ETHEREUM_NODE_RPC_PATH     = (ENV['ETHEREUM_NODE_RPC_PATH']     || '/').freeze
     HTTP_THREAD_COUNT          = (ENV['HTTP_THREAD_COUNT'].to_i     || 100).freeze
 
-    # Connect to the Ethereum node via Web3 / RPC
+    def get_and_save_raw_block block_number
+      block = get_block_from_blockchain block_number: block_number
+      create_raw_block_from block: block
+    end
+
     def get_blocks_from_blockchain starting_block_number:, ending_block_number: nil
       ending_block_number = latest_block_number if ending_block_number.blank?
 
       # Work through the blockchain in groups of blocks at a time
       starting_block_number.upto(ending_block_number).each_slice(HTTP_THREAD_COUNT) do |block_numbers|
-        # Create all of the promisess of work to do: get a block, save it to the database
-        promises = []
-        promises = block_numbers.map { |block_number| promise_to_create_raw_block block_number }
+        if HTTP_THREAD_COUNT == 1
+          # Synchronous
+          block_numbers.each do |block_number|
+            get_and_save_raw_block block_number
+          end
+        else
+          # Asynchronous
+          # Create all of the promisess of work to do: get a block, save it to the database
+          promises = []
+          promises = block_numbers.map { |block_number| promise_to_create_raw_block block_number }
 
-        # Do the work in all of the promises: get a block, save it to the database
-        promises.map(&:value)
+          # Do the work in all of the promises: get a block, save it to the database
+          promises.map(&:value)
+        end
 
         puts
         puts "RawBlocks now in the database: #{raw_blocks_count}"
@@ -48,8 +60,7 @@ class BlockImporterService
 
     def promise_to_create_raw_block block_number
       promise = Concurrent::Promise.new(executor: thread_pool_executor) do
-        block = get_block_from_blockchain block_number: block_number
-        create_raw_block_from block: block
+        get_and_save_raw_block block_number
       end
 
       promise.execute
@@ -104,6 +115,7 @@ class BlockImporterService
     end
 
     def web3
+      # Connect to the Ethereum node via Web3 / RPC
       @web3 ||= Web3::Eth::Rpc.new host: ETHEREUM_NODE_HOST,
                                    port: ETHEREUM_NODE_PORT,
                                    connect_options: {
