@@ -62,7 +62,7 @@ class BlockImporterService
 
     def latest_raw_block_number
       # Get the latest RawBlock’s block_number in the database
-      RawBlock.order(block_number: :desc).limit(1).first.block_number || 0
+      RawBlock.order(block_number: :desc).limit(1).first&.block_number || 0
     end
 
     def raw_blocks_count
