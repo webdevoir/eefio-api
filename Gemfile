@@ -36,10 +36,11 @@ group :development do
   gem 'spring-watcher-listen', '~> 2.0.0'
 end
 
-group :production do
-  # For GZIPping responses
-  gem 'heroku-deflater'
-end
+# TODO: fix upstream
+# group :production do
+#   # For GZIPping responses
+#   gem 'heroku-deflater'
+# end
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
 gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
