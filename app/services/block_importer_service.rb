@@ -82,11 +82,13 @@ class BlockImporterService
     end
 
     def save_in_sync_block_number
+      block_number = latest_raw_block_number
+
       # Update last synced block number setting.
       # The +1 is because the first block is 0.
       # Eg, If latest_raw_block_number is 2. The database will have be RawBlocks: 0, 1, 2.
-      if raw_blocks_count == (latest_raw_block_number + 1)
-        update_raw_blocks_previous_synced_at_block_number_setting! block_number: latest_raw_block_number
+      if raw_blocks_count == (block_number + 1)
+        update_raw_blocks_previous_synced_at_block_number_setting! block_number: block_number
       end
     end
 
