@@ -12,7 +12,7 @@ namespace :ethio do
 
       # Set the lowest block number to be fetched
       last_in_sync_block_number  = Setting.find_by(name: 'raw_blocks_previous_synced_at_block_number').content
-      lowest_block_number_needed = last_in_sync_block_number.to_i + 1
+      lowest_block_number_needed = last_in_sync_block_number.to_i
 
       BlockImporterService.get_blocks_from_blockchain starting_block_number: lowest_block_number_needed
 
