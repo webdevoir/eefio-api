@@ -14,15 +14,24 @@ class BlockImporterService
     HTTP_THREAD_COUNT          = (ENV['HTTP_THREAD_COUNT'].to_i     || 100).freeze
 
     def get_and_save_raw_block block_number
-      block = get_block_from_blockchain block_number: block_number
-      create_raw_block_from block: block
+      raw_block = RawBlock.find_by(block_number: block_number)
+
+      if raw_block.present?
+        puts "RawBlock already exists: #{block_number}"
+      else
+        block = get_block_from_blockchain block_number: block_number
+        create_raw_block_from block: block
+      end
     end
 
     def get_blocks_from_blockchain starting_block_number:, ending_block_number: nil
       ending_block_number = latest_block_number if ending_block_number.blank?
 
+      # Use larger batches when working synchronously
+      slice_size = (HTTP_THREAD_COUNT == 1 ? 1000 : HTTP_THREAD_COUNT)
+
       # Work through the blockchain in groups of blocks at a time
-      starting_block_number.upto(ending_block_number).each_slice(HTTP_THREAD_COUNT) do |block_numbers|
+      starting_block_number.upto(ending_block_number).each_slice(slice_size) do |block_numbers|
         if HTTP_THREAD_COUNT == 1
           # Synchronous
           block_numbers.each do |block_number|
@@ -31,6 +40,7 @@ class BlockImporterService
         else
           # Asynchronous
           # Create all of the promisess of work to do: get a block, save it to the database
+          puts "Making promises…"
           promises = []
           promises = block_numbers.map { |block_number| promise_to_create_raw_block block_number }
 
@@ -54,7 +64,7 @@ class BlockImporterService
       ActiveRecord::Base.connection_pool.with_connection do
         # Save the block to the raw_blocks table in the database
         raw_block = RawBlock.create block_number: block.block_number, content: block.raw_data.to_json
-        puts "+++ Saved block: #{raw_block.block_number}"
+        puts "+++ Saved block: #{raw_block.block_number}" if raw_block.created_at.present?
       end
     end
 
