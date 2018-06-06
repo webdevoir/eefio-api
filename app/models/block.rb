@@ -25,10 +25,12 @@ class Block < ApplicationRecord
   end
 
   def previous_block
+    # TODO FIXME to current block aware
     Block.order(block_number: :desc).limit(2).last
   end
 
   def next_block
+    # TODO FIXME to current block aware
     Block.order(block_number: :asc).limit(2).last
   end
 
