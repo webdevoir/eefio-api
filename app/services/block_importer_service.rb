@@ -40,25 +40,14 @@ class BlockImporterService
       starting_block_number.upto(ending_block_number).each_slice(slice_size) do |block_numbers|
         if HTTP_THREAD_COUNT == 1
           # Synchronous
-          block_numbers.each do |block_number|
-            # get_and_save_raw_block block_number
-            raw_block = RawBlock.find_by(block_number: block_number)
-
-            if raw_block.present?
-              puts "RawBlock already exists: #{block_number}"
-            else
-              block = get_block_from_blockchain block_number: block_number
-              create_raw_block_from block: block
-            end
-          end
+          puts "Fetching and saving blocks one by one…"
+          block_numbers.each { |bn| get_and_save_raw_block bn }
         else
           # Asynchronous
           # Create all of the promises of work to do: get a block, save it to the database
-          puts "Making promises…"
-          promises = block_numbers.map { |b| promise_to_create_raw_block(b).execute }
-
-          # Do the work in all of the promises: get a block, save it to the database
-          promises.map &:value
+          # Then do the work in all of the promises: get a block, save it to the database
+          puts "Making and keeping promises…"
+          block_numbers.map { |bn| promise_to_create_raw_block(bn).execute }.map &:value
         end
 
         puts
