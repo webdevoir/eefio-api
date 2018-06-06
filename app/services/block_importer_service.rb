@@ -14,9 +14,15 @@ class BlockImporterService
     HTTP_THREAD_COUNT          = (ENV['HTTP_THREAD_COUNT'].to_i     || 100).freeze
 
     def get_and_save_raw_block block_number
-      raw_block = RawBlock.find_by(block_number: block_number)
+      begin
+        ActiveRecord::Base.connection_pool.with_connection do
+          @raw_block = RawBlock.find_by(block_number: block_number)
+        end
+      rescue => e
+        puts e.inspect
+      end
 
-      if raw_block.present?
+      if @raw_block.present?
         puts "RawBlock already exists: #{block_number}"
       else
         block = get_block_from_blockchain block_number: block_number
@@ -35,17 +41,24 @@ class BlockImporterService
         if HTTP_THREAD_COUNT == 1
           # Synchronous
           block_numbers.each do |block_number|
-            get_and_save_raw_block block_number
+            # get_and_save_raw_block block_number
+            raw_block = RawBlock.find_by(block_number: block_number)
+
+            if raw_block.present?
+              puts "RawBlock already exists: #{block_number}"
+            else
+              block = get_block_from_blockchain block_number: block_number
+              create_raw_block_from block: block
+            end
           end
         else
           # Asynchronous
-          # Create all of the promisess of work to do: get a block, save it to the database
+          # Create all of the promises of work to do: get a block, save it to the database
           puts "Making promises…"
-          promises = []
-          promises = block_numbers.map { |block_number| promise_to_create_raw_block block_number }
+          promises = block_numbers.map { |b| promise_to_create_raw_block(b).execute }
 
           # Do the work in all of the promises: get a block, save it to the database
-          promises.map(&:value)
+          promises.map &:value
         end
 
         puts
@@ -69,11 +82,9 @@ class BlockImporterService
     end
 
     def promise_to_create_raw_block block_number
-      promise = Concurrent::Promise.new(executor: thread_pool_executor) do
+      Concurrent::Promise.new(executor: thread_pool_executor) do
         get_and_save_raw_block block_number
       end
-
-      promise.execute
     end
 
     def latest_block_number
