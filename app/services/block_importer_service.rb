@@ -14,15 +14,11 @@ class BlockImporterService
     HTTP_THREAD_COUNT          = (ENV['HTTP_THREAD_COUNT'].to_i     || 100).freeze
 
     def get_and_save_raw_block block_number
-      begin
-        ActiveRecord::Base.connection_pool.with_connection do
-          @raw_block = RawBlock.find_by(block_number: block_number)
-        end
-      rescue => e
-        puts e.inspect
+      raw_block = ActiveRecord::Base.connection_pool.with_connection do
+        RawBlock.find_by(block_number: block_number)
       end
 
-      if @raw_block.present?
+      if raw_block.present?
         puts "RawBlock already exists: #{block_number}"
       else
         block = get_block_from_blockchain block_number: block_number
