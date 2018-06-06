@@ -1,12 +1,12 @@
 require_relative 'boot'
 
-require "rails"
+require 'rails'
 # Pick the frameworks you want:
-require "active_model/railtie"
-require "active_job/railtie"
-require "active_record/railtie"
-require "action_controller/railtie"
-require "action_view/railtie"
+require 'active_model/railtie'
+require 'active_job/railtie'
+require 'active_record/railtie'
+require 'action_controller/railtie'
+require 'action_view/railtie'
 
 # Require the gems listed in Gemfile, including any gems
 # you've limited to :test, :development, or :production.
@@ -35,8 +35,7 @@ module EthioAPI
     # Skip views, helpers and assets when generating a new resource.
     config.api_only = true
 
-    # TODO: Why do neither of these autoload String.rb and Integer.rb from /app/lib?
-    # config.autoload_paths += [[Rails.root, 'app', 'lib'].join('/')]
-    # config.autoload_paths += ["#{Rails.root}/app/lib"]
+    # TODO: Why doesn’t this autoload String.rb and Integer.rb from /app/lib?
+    config.autoload_paths << Rails.root.join('app', 'lib')
   end
 end
