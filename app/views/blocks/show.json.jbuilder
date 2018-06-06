@@ -43,3 +43,8 @@ json.meta do
   json.documentation Ethio::DOCUMENTATION_URL
   json.contributors  Ethio::CONTRIBUTORS
 end
+
+json.jsonapi do
+  json.version     Ethio::JSONAPI_VERSION
+  json.description Ethio::JSONAPI_DESCRIPTION
+end

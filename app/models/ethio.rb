@@ -5,4 +5,7 @@ class Ethio
   CONTRIBUTORS      = [
     'Shane Becker / https://veganstraightedge.com'
   ].freeze
+
+  JSONAPI_VERSION     = '0'.freeze
+  JSONAPI_DESCRIPTION = I18n.t('jsonapi.description').freeze
 end
