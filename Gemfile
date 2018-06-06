@@ -1,10 +1,15 @@
 source 'https://rubygems.org'
 git_source(:github) { |repo| 'https://github.com/#{repo}.git' }
 
+# Required Ruby version
 ruby '2.5.1'
 
 gem 'rails', '~> 5.2.0'
+
+# Database
 gem 'pg', '>= 0.18', '< 2.0'
+
+# Webserv
 gem 'puma'
 
 # API JSON views
@@ -13,20 +18,25 @@ gem 'jbuilder', '~> 2.5'
 # Reduces boot times through caching; required in config/boot.rb
 gem 'bootsnap', '>= 1.1.0', require: false
 
-# Use Rack CORS for handling Cross-Origin Resource Sharing (CORS), making cross-origin AJAX possible
-# gem 'rack-cors'
+# For open CORS (Cross-Origin Resource Sharing), making cross-origin AJAX possible
+gem 'rack-cors'
 
-# Ethereum network API
+# For Ethereum network API
 gem 'web3-eth'
 
 # For threading, promises, futures, etc
+# Used in ethio:blockchain:sync rake task
 gem 'concurrent-ruby'
 gem 'concurrent-ruby-ext'
 
 group :development, :test do
-  gem 'dotenv-rails'
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'byebug', platforms: [:mri, :mingw, :x64_mingw]
+
+  # For setting and loading ENVironment variables in non-production
+  gem 'dotenv-rails'
+
+  # For Testing
   gem 'rspec-rails'
 end
 
