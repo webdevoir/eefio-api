@@ -3,7 +3,8 @@ class Ethio
   API_URL           = (ENV['ETHIO_API_URL']           || 'https://api.ethio.app').freeze
   DOCUMENTATION_URL = (ENV['ETHIO_DOCUMENTATION_URL'] || 'https://ethio.app').freeze
   CONTRIBUTORS      = [
-    'Shane Becker / https://veganstraightedge.com'
+    '# Human Name | # GitHub username  | # Personal Website (optional)',
+    'Shane Becker | @veganstraightedge | https://veganstraightedge.com'
   ].freeze
 
   JSONAPI_VERSION     = '0'.freeze
