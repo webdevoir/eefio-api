@@ -1,8 +1,8 @@
 json.prettify!
 
-# json.links do
-#   json.merge! @root.links
-# end
+json.links do
+  json.merge! @links
+end
 
 json.meta do
   json.license       Ethio::LICENSE
