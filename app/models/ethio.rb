@@ -1,9 +1,8 @@
 class Ethio
-  LICENSE = 'CC0 / http://creativecommons.org/publicdomain/zero/1.0'.freeze
-
-  DOCUMENTATION_URL = ENV.fetch('ETHIO_DOCUMENTATION_URL') do
-    Rails.env.development? ? 'http://localhost:3000' : 'https://ethio.app'
-  end.freeze
+  JSONAPI_VERSION     = '0'.freeze
+  JSONAPI_DESCRIPTION = I18n.t('jsonapi.description').freeze
+  LICENSE             = 'CC0 / http://creativecommons.org/publicdomain/zero/1.0'.freeze
+  DOCUMENTATION_URL   = (ENV['ETHIO_DOCUMENTATION_URL'] || 'https://ethio.app').freeze
 
   API_URL = ENV.fetch('ETHIO_API_BASE_URL') do
     Rails.env.development? ? 'http://localhost:3000' : 'https://api.ethio.app'
@@ -13,7 +12,4 @@ class Ethio
     '# Human Name | # GitHub username  | # Personal Website (optional)',
     'Shane Becker | @veganstraightedge | https://veganstraightedge.com'
   ].freeze
-
-  JSONAPI_VERSION     = '0'.freeze
-  JSONAPI_DESCRIPTION = I18n.t('jsonapi.description').freeze
 end

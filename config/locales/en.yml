@@ -1,3 +1,14 @@
 en:
   jsonapi:
     description: Ethio is not JSON API compliant, but it is heavily inspired by the JSON API spec.
+
+  api:
+    endpoints:
+      - name: blocks#one
+        description:
+          "Get any ONE Block. Specify which Block you want by one of three identifiers:
+          latest, block number, or block address.
+          Latest is a string literal: latest.
+          Block number is an integer (eg, 0, 1, 137, 1979, 44203, 100000001, etc).
+          Block address is a hexadecimal number (eg, 0x0, 0x1, 0x311, 0x6521, 0xACAB, 0x4294967297 etc).
+          Examples: /blocks/latest, /blocks/137, /blocks/0xACAB."

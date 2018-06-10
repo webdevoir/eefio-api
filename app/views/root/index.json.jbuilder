@@ -4,6 +4,10 @@ json.links do
   json.merge! @links
 end
 
+json.data do
+  json.endpoints @endpoints
+end
+
 json.meta do
   json.license       Ethio::LICENSE
   json.url           Ethio::API_URL
