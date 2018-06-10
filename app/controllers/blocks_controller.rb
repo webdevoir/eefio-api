@@ -1,6 +1,6 @@
 class BlocksController < ApplicationController
   def show
-    id = params[:id].strip.downcase
+    id = params.permit(:id)[:id].strip.downcase
 
     @identifier =
       if id == 'latest'
