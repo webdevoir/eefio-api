@@ -18,7 +18,7 @@ class BlockExtractorService
   class << self
     def extract_block_from raw_block:
       # Work with just the RawBlock’s content JSON blob
-      raw_block = JSON.parse(raw_block.content).with_indifferent_access
+      raw_block_content = JSON.parse(raw_block.content).with_indifferent_access
 
       # Create a new empty Block object
       block = Block.new
@@ -47,7 +47,7 @@ class BlockExtractorService
         transactions_root_address:                  :transactionsRoot,
         uncles:                                     :uncles
       }.each do |block_attr, raw_block_attr|
-        block.send("#{block_attr}=", raw_block[raw_block_attr])
+        block.send("#{block_attr}=", raw_block_content[raw_block_attr])
       end
 
       # Keys (on the left) are Block attributes (columns in the database on the blocks table)
@@ -63,14 +63,20 @@ class BlockExtractorService
         size_in_bytes:                       :size,
         total_difficulty:                    :totalDifficulty,
       }.each do |block_attr, raw_block_attr|
-        block.send("#{block_attr}=", raw_block[raw_block_attr].from_hex)
+        block.send("#{block_attr}=", raw_block_content[raw_block_attr].from_hex)
       end
 
       # Block#published_at is a special case because it’s store as DateTime object
-      block.published_at = Time.at raw_block[:timestamp].from_hex
+      block.published_at = Time.at raw_block_content[:timestamp].from_hex
 
-      # Save the Block to the database
-      block.save
+      # Ensure that BOTH the Block is created and the RawBlock is updated together
+      Block.transaction do
+        # Save the Block to the database
+        block.save
+
+        # Mark the associated RawBlock that its block data has been extract
+        raw_block.update block_extracted_at: block.created_at
+      end
     end
   end
 end
