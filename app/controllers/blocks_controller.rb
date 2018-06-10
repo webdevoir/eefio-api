@@ -20,5 +20,7 @@ class BlocksController < ApplicationController
       when :block_number
         Block.find_by block_number: params[:id]
       end
+
+    @documentation = [Ethio::DOCUMENTATION_URL, Block::URL_NAMESPACE, 'one'].join('/')
   end
 end
