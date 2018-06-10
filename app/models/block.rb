@@ -5,14 +5,31 @@ class Block < ApplicationRecord
 
   URL_NAMESPACE = 'blocks'.freeze
 
+  class << self
+    def first_block
+      Block.find_by block_number: 0
+    end
+
+    def last_block
+      Block.order(block_number: :desc).limit(1).last
+    end
+  end
+
   def links identifier:
     links = {}
 
-    links[:self]     = url_for(identifier: identifier, block: self)
-    links[:first]    = url_for(identifier: identifier, block: first_block)
-    links[:next]     = url_for(identifier: identifier, block: next_block)     unless next_block     == self
-    links[:previous] = url_for(identifier: identifier, block: previous_block) unless previous_block == self
-    links[:last]     = url_for(identifier: identifier, block: last_block)
+    links[:self]  = url_for(identifier: identifier, block: self)
+    links[:first] = url_for(identifier: identifier, block: Block.first_block)
+
+    unless previous_block == self || previous_block.blank?
+      links[:previous] = url_for(identifier: identifier, block: previous_block)
+    end
+
+    unless next_block == self || next_block.blank?
+      links[:next] = url_for(identifier: identifier, block: next_block)
+    end
+
+    links[:last] = url_for(identifier: identifier, block: Block.last_block)
 
     links
   end
@@ -25,20 +42,10 @@ class Block < ApplicationRecord
   end
 
   def previous_block
-    # TODO FIXME to current block aware
-    Block.order(block_number: :desc).limit(2).last
+    Block.find_by(block_number: block_number - 1)
   end
 
   def next_block
-    # TODO FIXME to current block aware
-    Block.order(block_number: :asc).limit(2).last
-  end
-
-  def first_block
-    Block.order(block_number: :asc).limit(1).last
-  end
-
-  def last_block
-    Block.order(block_number: :desc).limit(1).last
+    Block.find_by(block_number: block_number + 1)
   end
 end
