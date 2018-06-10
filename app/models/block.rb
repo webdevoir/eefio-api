@@ -34,18 +34,18 @@ class Block < ApplicationRecord
     links
   end
 
-  def url_for block:, identifier:
-    namespace_identifier = block.address
-    namespace_identifier = block.block_number.to_i if identifier == :block_number
-
-    [URL::ETHIO_API_BASE_URL, URL_NAMESPACE, namespace_identifier].join('/')
+  def next_block
+    Block.find_by(block_number: block_number + 1)
   end
 
   def previous_block
     Block.find_by(block_number: block_number - 1)
   end
 
-  def next_block
-    Block.find_by(block_number: block_number + 1)
+  def url_for block:, identifier:
+    namespace_identifier = block.address
+    namespace_identifier = block.block_number.to_i if identifier == :block_number
+
+    [URL::ETHIO_API_BASE_URL, URL_NAMESPACE, namespace_identifier].join('/')
   end
 end
