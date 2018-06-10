@@ -1,7 +1,7 @@
 json.prettify!
 
 json.links do
-  json.merge! @block.links identifier: @identifier
+  json.merge! @links
 end
 
 json.data do

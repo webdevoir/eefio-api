@@ -21,6 +21,8 @@ class BlocksController < ApplicationController
         Block.find_by block_number: params[:id]
       end
 
+    @links = @block.links identifier: @identifier
+
     @documentation = [Ethio::DOCUMENTATION_URL, Block::URL_NAMESPACE, 'one'].join('/')
   end
 end
