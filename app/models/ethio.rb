@@ -9,7 +9,7 @@ class Ethio
   end.freeze
 
   CONTRIBUTORS = [
-    '# Human Name | # GitHub username  | # Personal Website (optional)',
+    I18n.t('api.contributors.header'),
     'Shane Becker | @veganstraightedge | https://veganstraightedge.com'
   ].freeze
 end

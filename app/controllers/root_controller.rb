@@ -18,6 +18,8 @@ class RootController < ApplicationController
   end
 
   def api_url_for name:
-    [Ethio::API_URL, name.split('#')].join('/').gsub('/one', '/:identifier')
+    [Ethio::API_URL, name.split('#')].join('/').
+      gsub('/one', '/:identifier').
+      gsub('/root', '')
   end
 end

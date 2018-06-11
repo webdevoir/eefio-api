@@ -3,7 +3,15 @@ en:
     description: Ethio is not JSON API compliant, but it is heavily inspired by the JSON API spec.
 
   api:
+    contributors:
+      header: '# Human Name | # GitHub username  | # Personal Website (optional)'
+
     endpoints:
+      - name: root
+        description:
+          "Get a list of all Ethio API endpoints. Each entry in the list includes: name, HTTP verb,
+          API URL, documentation URL, and a description of what the endpoint does.
+          You’re looking at it now!"
       - name: blocks#one
         description:
           "Get any ONE Block. Specify which Block you want by one of three identifiers:
