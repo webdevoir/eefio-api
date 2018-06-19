@@ -175,7 +175,7 @@ GEM
     tzinfo (1.2.5)
       thread_safe (~> 0.1)
     unicode-display_width (1.4.0)
-    web3-eth (0.2.15)
+    web3-eth (0.2.16)
       digest-sha3 (~> 1.1.0)
       rlp (~> 0.7.3)
     websocket-driver (0.7.0)
