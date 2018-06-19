@@ -50,6 +50,7 @@ json.data do
 end
 
 json.meta do
+  json.version       Ethio::API_VERSION
   json.license       Ethio::LICENSE
   json.url           Ethio::API_URL
   json.contributors  Ethio::CONTRIBUTORS
