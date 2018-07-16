@@ -16,4 +16,4 @@ end
 
 puts 'All done.'
 puts 'Next, run:'
-puts '    rake blockchain:sync'
+puts '    rake ethio:blockchain:sync'
