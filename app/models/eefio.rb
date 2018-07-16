@@ -3,10 +3,10 @@ class Eefio
   JSONAPI_VERSION     = '0'.freeze
   JSONAPI_DESCRIPTION = I18n.t('jsonapi.description').freeze
   LICENSE             = 'CC0 / http://creativecommons.org/publicdomain/zero/1.0'.freeze
-  DOCUMENTATION_URL   = (ENV['ETHIO_DOCUMENTATION_URL'] || 'https://eefio.app/docs').freeze
+  DOCUMENTATION_URL   = (ENV['ETHIO_DOCUMENTATION_URL'] || 'https://eefio.com/docs').freeze
 
   API_URL = ENV.fetch('ETHIO_API_BASE_URL') do
-    Rails.env.development? ? 'http://localhost:3000' : 'https://api.eefio.app'
+    Rails.env.development? ? 'http://localhost:3000' : 'https://api.eefio.com'
   end.freeze
 
   CONTRIBUTORS = [

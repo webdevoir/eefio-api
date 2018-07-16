@@ -10,9 +10,9 @@
     "blockchain"
   ],
 
-  "website": "https://eefio.app",
+  "website": "https://eefio.com",
   "repository": "https://github.com/eefio/eefio-api",
-  "logo": "",
+  "logo": "http://localhost:3000/assets/eefio-avatar.png",
 
   "success_url": "/",
 

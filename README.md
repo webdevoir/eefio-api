@@ -2,8 +2,8 @@
 
 **A RESTful API for the Ethereum blockchain, powered by Rails**
 
-- Production: [api.eefio.app](https://api.eefio.app)
-- Staging: [staging.api.eefio.app](https://staging.api.eefio.app)
+- Production: [api.eefio.com](https://api.eefio.com)
+- Staging: [staging.api.eefio.com](https://staging.api.eefio.com)
 
 <!-- [![Build Status](https://travis-ci.org/eefio/eefio-api.svg?branch=master)](https://travis-ci.org/eefio/eefio-api) -->
 <!-- [![Maintainability](https://api.codeclimate.com/v1/badges/22ef4ea6475be7057b87/maintainability)](https://codeclimate.com/github/eefio/eefio-api/maintainability) -->
@@ -188,6 +188,6 @@ To work on an issue or story card, follow these steps (roughly speaking):
 
 - When the pull request is merged into `master` and the feature branch should be deleted remotely and locally.
 
-- All commits to `master` are auto-deployed to the `staging` server: https://staging.api.eefio.app.
+- All commits to `master` are auto-deployed to the `staging` server: https://staging.api.eefio.com.
 
-- Changes to the `staging` server have to be manually approved by a human to be promoted to `production` from the Heroku website. https://api.eefio.app
+- Changes to the `staging` server have to be manually approved by a human to be promoted to `production` from the Heroku website. https://api.eefio.com
