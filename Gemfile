@@ -25,7 +25,7 @@ gem 'rack-cors'
 gem 'web3-eth'
 
 # For threading, promises, futures, etc
-# Used in ethio:blockchain:sync rake task
+# Used in eefio:blockchain:sync rake task
 gem 'concurrent-ruby'
 gem 'concurrent-ruby-ext'
 

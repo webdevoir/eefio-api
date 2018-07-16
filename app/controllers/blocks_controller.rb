@@ -23,6 +23,6 @@ class BlocksController < ApplicationController
 
     @links = @block.links identifier: @identifier
 
-    @documentation = [Ethio::DOCUMENTATION_URL, Block::URL_NAMESPACE, 'one'].join('/')
+    @documentation = [Eefio::DOCUMENTATION_URL, Block::URL_NAMESPACE, 'one'].join('/')
   end
 end

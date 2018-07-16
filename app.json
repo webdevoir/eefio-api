@@ -1,5 +1,5 @@
 {
-  "name": "Ethio API",
+  "name": "Eefio API",
   "description": "A RESTful API for the Ethereum blockchain, powered by Rails",
   "keywords": [
     "REST",
@@ -10,8 +10,8 @@
     "blockchain"
   ],
 
-  "website": "https://ethio.app",
-  "repository": "https://github.com/sandstormco/ethio-api",
+  "website": "https://eefio.app",
+  "repository": "https://github.com/eefio/eefio-api",
   "logo": "",
 
   "success_url": "/",

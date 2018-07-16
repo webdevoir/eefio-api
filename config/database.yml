@@ -4,14 +4,14 @@ default: &default
 
 development:
   <<: *default
-  database: ethio_api_development
+  database: eefio_api_development
 
 test:
   <<: *default
-  database: ethio_api_test
+  database: eefio_api_test
 
 production:
   <<: *default
-  database: ethio_api_production
-  username: ethio_wwi
+  database: eefio_api_production
+  username: eefio_wwi
   password: <%= ENV['ETHIO_API_DATABASE_PASSWORD'] %>

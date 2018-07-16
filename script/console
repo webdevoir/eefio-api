@@ -21,9 +21,9 @@ chdir APP_ROOT do
     # Use first argument as an environment name.
     # Use this to decide how to connect to the appropriate console.
     if ARGV[0] == 'production'
-      system! 'heroku run rails console --app ethio-api'
+      system! 'heroku run rails console --app eefio-api'
     elsif ARGV[0] == 'staging'
-      system! 'heroku run rails console --app ethio-api-staging'
+      system! 'heroku run rails console --app eefio-api-staging'
     else
       puts "Sorry, I don’t know how to connect to the #{ARGV[0]} environment."
       `exit 1`

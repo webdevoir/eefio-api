@@ -46,6 +46,6 @@ class Block < ApplicationRecord
     namespace_identifier = block.address
     namespace_identifier = block.block_number.to_i if identifier == :block_number
 
-    [Ethio::API_URL, URL_NAMESPACE, namespace_identifier].join('/')
+    [Eefio::API_URL, URL_NAMESPACE, namespace_identifier].join('/')
   end
 end

@@ -50,14 +50,14 @@ json.data do
 end
 
 json.meta do
-  json.version       Ethio::API_VERSION
-  json.license       Ethio::LICENSE
-  json.url           Ethio::API_URL
-  json.contributors  Ethio::CONTRIBUTORS
+  json.version       Eefio::API_VERSION
+  json.license       Eefio::LICENSE
+  json.url           Eefio::API_URL
+  json.contributors  Eefio::CONTRIBUTORS
   json.documentation @documentation
 end
 
 json.jsonapi do
-  json.version     Ethio::JSONAPI_VERSION
-  json.description Ethio::JSONAPI_DESCRIPTION
+  json.version     Eefio::JSONAPI_VERSION
+  json.description Eefio::JSONAPI_DESCRIPTION
 end

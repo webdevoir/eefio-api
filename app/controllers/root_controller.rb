@@ -1,6 +1,6 @@
 class RootController < ApplicationController
   def index
-    @links = { self: Ethio::API_URL }
+    @links = { self: Eefio::API_URL }
 
     @endpoints = I18n.t('api.endpoints').map do |endpoint|
       {
@@ -14,11 +14,11 @@ class RootController < ApplicationController
   end
 
   def documenation_url_for name:
-    [Ethio::DOCUMENTATION_URL, name.split('#')].join('/')
+    [Eefio::DOCUMENTATION_URL, name.split('#')].join('/')
   end
 
   def api_url_for name:
-    [Ethio::API_URL, name.split('#')].join('/').
+    [Eefio::API_URL, name.split('#')].join('/').
       gsub('/one', '/:identifier').
       gsub('/root', '')
   end

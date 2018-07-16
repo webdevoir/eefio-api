@@ -1,12 +1,12 @@
-# Ethio API
+# Eefio API
 
 **A RESTful API for the Ethereum blockchain, powered by Rails**
 
-- Production: [api.ethio.app](https://api.ethio.app)
-- Staging: [staging.api.ethio.app](https://staging.api.ethio.app)
+- Production: [api.eefio.app](https://api.eefio.app)
+- Staging: [staging.api.eefio.app](https://staging.api.eefio.app)
 
-<!-- [![Build Status](https://travis-ci.org/sandstormco/ethio-api.svg?branch=master)](https://travis-ci.org/sandstormco/ethio-api) -->
-<!-- [![Maintainability](https://api.codeclimate.com/v1/badges/22ef4ea6475be7057b87/maintainability)](https://codeclimate.com/github/sandstormco/ethio-api/maintainability) -->
+<!-- [![Build Status](https://travis-ci.org/eefio/eefio-api.svg?branch=master)](https://travis-ci.org/eefio/eefio-api) -->
+<!-- [![Maintainability](https://api.codeclimate.com/v1/badges/22ef4ea6475be7057b87/maintainability)](https://codeclimate.com/github/eefio/eefio-api/maintainability) -->
 
 
 ## Development Setup
@@ -16,8 +16,8 @@
 [Strap your computer](https://macos-strap.herokuapp.com), first (macOS only. Windows/Linux… ask a friend?).
 
 ```bash
-git clone https://github.com/sandstormco/ethio-api.git
-cd ethio-api
+git clone https://github.com/eefio/eefio-api.git
+cd eefio-api
 ./script/setup
 ./script/server
 ```
@@ -25,7 +25,7 @@ cd ethio-api
 
 ## Scripts to Rule Them All
 
-Ethio repos use the [Scripts to Rule Them All](http://githubengineering.com/scripts-to-rule-them-all) pattern.
+Eefio repos use the [Scripts to Rule Them All](http://githubengineering.com/scripts-to-rule-them-all) pattern.
 See also: https://github.com/github/scripts-to-rule-them-all
 
 `/script` is a collection of scripts for development on an OS X / macOS computer.
@@ -123,7 +123,7 @@ Setup environment for CI and run tests. This is primarily designed to run on the
 
 ## Deploy to Heroku
 
-If you want to run your own copy of the Ethio API, you can!
+If you want to run your own copy of the Eefio API, you can!
 (This requires you having a Heroku account already.)
 Click this button to easily deploy to Heroku.
 
@@ -138,15 +138,15 @@ Click this button to easily deploy to Heroku.
 
 ## Contributing
 
-See [CONTRIBUTING.md](https://github.com/sandstormco/ethio-api/blob/master/CONTRIBUTING.md).
+See [CONTRIBUTING.md](https://github.com/eefio/eefio-api/blob/master/CONTRIBUTING.md).
 
-If you find bugs, have feature requests or questions, please [file an issue](https://github.com/sandstormco/ethio-api/issues).
+If you find bugs, have feature requests or questions, please [file an issue](https://github.com/eefio/eefio-api/issues).
 
 
 ## Code of Conduct
 
-Everyone interacting in the Ethio's project's codebases, issue trackers, chat rooms, and mailing lists is expected to follow the
-[Ethio development code of conduct](https://github.com/sandstormco/ethio-api/blob/master/CODE_OF_CONDUCT.md).
+Everyone interacting in the Eefio's project's codebases, issue trackers, chat rooms, and mailing lists is expected to follow the
+[Eefio development code of conduct](https://github.com/eefio/eefio-api/blob/master/CODE_OF_CONDUCT.md).
 
 
 ## License
@@ -156,7 +156,7 @@ Everyone interacting in the Ethio's project's codebases, issue trackers, chat ro
 Your heart is as free as the air you breathe.
 The ground you stand on is liberated territory.
 
-In legal text, Ethio API is dedicated to the public domain
+In legal text, Eefio API is dedicated to the public domain
 using Creative Commons — CC0 1.0 Universal.
 
 [http://creativecommons.org/publicdomain/zero/1.0](http://creativecommons.org/publicdomain/zero/1.0 "Creative Commons — CC0 1.0 Universal")
@@ -188,6 +188,6 @@ To work on an issue or story card, follow these steps (roughly speaking):
 
 - When the pull request is merged into `master` and the feature branch should be deleted remotely and locally.
 
-- All commits to `master` are auto-deployed to the `staging` server: https://staging.api.ethio.app.
+- All commits to `master` are auto-deployed to the `staging` server: https://staging.api.eefio.app.
 
-- Changes to the `staging` server have to be manually approved by a human to be promoted to `production` from the Heroku website. https://api.ethio.app
+- Changes to the `staging` server have to be manually approved by a human to be promoted to `production` from the Heroku website. https://api.eefio.app

@@ -1,12 +1,12 @@
-# Contributing to sandstormco/ethio-api
+# Contributing to eefio/eefio-api
 
 ## Getting started
 
 Clone the repository, move into it and run the scripts:
 
 ```
-git clone https://github.com/sandstormco/ethio-api.git
-cd ethio-api
+git clone https://github.com/eefio/eefio-api.git
+cd eefio-api
 ./script/bootstrap
 ./script/setup
 ./script/server
@@ -28,7 +28,7 @@ To run the test suite:
 
 Submit tests for your changes. You can test your changes on your machine by [running the test suite](#testing).
 
-When you submit a PR, tests will also be run on the continuous integration environment [through Travis](https://travis-ci.org/sandstormco/ethio-api).
+When you submit a PR, tests will also be run on the continuous integration environment [through Travis](https://travis-ci.org/eefio/eefio-api).
 
 
 ## Reviews

@@ -1,4 +1,4 @@
-namespace :ethio do
+namespace :eefio do
   namespace :blockchain do
     desc 'Sync blocks from the Ethereum blockchain into the raw_blocks database table'
     task sync: :environment do
