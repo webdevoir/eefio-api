@@ -60,7 +60,10 @@ class BlockImporterService
 
     def get_block_from_blockchain block_number:
       puts "==> Fetching block from chain: #{block_number}"
-      web3.eth.getBlockByNumber block_number
+      block = web3.eth.getBlockByNumber block_number
+
+      puts block.inspect
+      block
     end
 
     def create_raw_block_from block:
