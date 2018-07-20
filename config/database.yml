@@ -14,4 +14,4 @@ production:
   <<: *default
   database: eefio_api_production
   username: eefio_wwi
-  password: <%= ENV['ETHIO_API_DATABASE_PASSWORD'] %>
+  password: <%= ENV['EEFIO_API_DATABASE_PASSWORD'] %>
