@@ -43,7 +43,12 @@ class BlockImporterService
           # Create all of the promises of work to do: get a block, save it to the database
           # Then do the work in all of the promises: get a block, save it to the database
           puts "Making and keeping promises…"
-          block_numbers.map { |bn| promise_to_create_raw_block(bn).execute }.map &:value
+          promises = block_numbers.map do |bn|
+            Concurrent::Promise.execute { get_and_save_raw_block bn }
+          end
+
+          # Block here until all of the promises have completed their work
+          promises.each &:value
         end
 
         puts
