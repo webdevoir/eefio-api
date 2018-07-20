@@ -13,5 +13,5 @@ test:
 production:
   <<: *default
   database: eefio_api_production
-  username: eefio_wwi
+  username: eefio_api
   password: <%= ENV['EEFIO_API_DATABASE_PASSWORD'] %>
