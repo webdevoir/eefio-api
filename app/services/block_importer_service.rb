@@ -141,7 +141,7 @@ class BlockImporterService
       existing_raw_block_numbers_in_the_db = RawBlock.pluck(:block_number).sort.uniq
       all_raw_block_numbers                = (RawBlock.last_in_sync_block_number..RawBlock.last.block_number).to_a
 
-      all_raw_block_numbers - existing_raw_block_numbers_in_the_db
+      (all_raw_block_numbers - existing_raw_block_numbers_in_the_db).compact
     end
 
     def fetch_missing_raw_blocks
