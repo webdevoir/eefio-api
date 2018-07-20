@@ -5,13 +5,13 @@ class BlockImporterService
     # Your Infura API key then needs to go into your .env file with a leading slash. For example:
     #     ETHEREUM_NODE_RPC_PATH = /1e8cfBC369ADDc93d135
     # Setup in your .env file at the root of this Rails apps
-    ETHEREUM_NODE_HOST         = (ENV['ETHEREUM_NODE_HOST']         || 'mainnet.infura.io').freeze
-    ETHEREUM_NODE_PORT         = (ENV['ETHEREUM_NODE_PORT']         || 443).freeze
-    ETHEREUM_NODE_OPEN_TIMEOUT = (ENV['ETHEREUM_NODE_OPEN_TIMEOUT'] || 20).freeze
-    ETHEREUM_NODE_READ_TIMEOUT = (ENV['ETHEREUM_NODE_READ_TIMEOUT'] || 140).freeze
-    ETHEREUM_NODE_USE_SSL      = (ENV['ETHEREUM_NODE_USE_SSL']      || true).freeze
-    ETHEREUM_NODE_RPC_PATH     = (ENV['ETHEREUM_NODE_RPC_PATH']     || '/').freeze
-    HTTP_THREAD_COUNT          = (ENV['HTTP_THREAD_COUNT'].to_i     || 100).freeze
+    ETHEREUM_NODE_HOST         = (ENV['ETHEREUM_NODE_HOST']           || 'mainnet.infura.io').freeze
+    ETHEREUM_NODE_PORT         = (ENV['ETHEREUM_NODE_PORT']           || 443).freeze
+    ETHEREUM_NODE_OPEN_TIMEOUT = (ENV['ETHEREUM_NODE_OPEN_TIMEOUT']   || 20).freeze
+    ETHEREUM_NODE_READ_TIMEOUT = (ENV['ETHEREUM_NODE_READ_TIMEOUT']   || 140).freeze
+    ETHEREUM_NODE_USE_SSL      = (ENV['ETHEREUM_NODE_USE_SSL']        || true).freeze
+    ETHEREUM_NODE_RPC_PATH     = (ENV['ETHEREUM_NODE_RPC_PATH']       || '/').freeze
+    EEFIO_HTTP_THREAD_COUNT    = (ENV['EEFIO_HTTP_THREAD_COUNT'].to_i || 100).freeze
 
     def get_and_save_raw_block block_number
       raw_block = ActiveRecord::Base.connection_pool.with_connection do
@@ -30,11 +30,11 @@ class BlockImporterService
       ending_block_number = latest_block_number if ending_block_number.blank?
 
       # Use larger batches when working synchronously
-      slice_size = (HTTP_THREAD_COUNT == 1 ? 1000 : HTTP_THREAD_COUNT)
+      slice_size = (EEFIO_HTTP_THREAD_COUNT == 1 ? 1000 : EEFIO_HTTP_THREAD_COUNT)
 
       # Work through the blockchain in groups of blocks at a time
       starting_block_number.upto(ending_block_number).each_slice(slice_size) do |block_numbers|
-        if HTTP_THREAD_COUNT == 1
+        if EEFIO_HTTP_THREAD_COUNT == 1
           # Synchronous
           puts "Fetching and saving blocks one by one…"
           block_numbers.each { |bn| get_and_save_raw_block bn }
