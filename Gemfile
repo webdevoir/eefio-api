@@ -23,6 +23,9 @@ gem 'rack-cors'
 # For Ethereum network API
 gem 'web3-eth'
 
+# For background workers
+gem 'sidekiq'
+
 # For threading, promises, futures, etc
 # Used in eefio:blockchain:sync rake task
 gem 'concurrent-ruby'
