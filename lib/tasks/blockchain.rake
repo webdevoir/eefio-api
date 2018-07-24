@@ -10,19 +10,13 @@ namespace :eefio do
       puts "___ Latest RawBlock block_number:  #{latest_raw_block_number}"
       puts
 
-      eefio_job_queue_max_size = (ENV['EEFIO_JOB_QUEUE_MAX_SIZE'] || 10000).to_i.freeze
-      starting_block_number    = latest_raw_block_number
-
-      ending_block_number      = [
-        (starting_block_number + eefio_job_queue_max_size),
-        BlockImporterService.latest_block_number
-      ].min
+      starting_block_number = latest_raw_block_number
+      ending_block_number   = BlockImporterService::EEFIO_JOB_QUEUE_MAX_SIZE
 
       puts "==> Creating Jobs for block numbers: #{starting_block_number} - #{ending_block_number}"
       puts
 
-      BlockImporterService.get_blocks_from_blockchain starting_block_number: starting_block_number,
-                                                      ending_block_number:   ending_block_number
+      BlockImporterService.get_blocks_from_blockchain starting_block_number: starting_block_number
     end
   end
 end

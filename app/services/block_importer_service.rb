@@ -1,17 +1,18 @@
 class BlockImporterService
-  class << self
-    # README:
-    # If you’re using Infura.io for your host, you’ll need to get an API key from their website.
-    # Your Infura API key then needs to go into your .env file with a leading slash. For example:
-    #     ETHEREUM_NODE_RPC_PATH = /1e8cfBC369ADDc93d135
-    # Setup in your .env file at the root of this Rails apps
-    ETHEREUM_NODE_HOST         = (ENV['ETHEREUM_NODE_HOST']           || 'mainnet.infura.io').freeze
-    ETHEREUM_NODE_PORT         = (ENV['ETHEREUM_NODE_PORT']           || 443).freeze
-    ETHEREUM_NODE_OPEN_TIMEOUT = (ENV['ETHEREUM_NODE_OPEN_TIMEOUT']   || 20).freeze
-    ETHEREUM_NODE_READ_TIMEOUT = (ENV['ETHEREUM_NODE_READ_TIMEOUT']   || 140).freeze
-    ETHEREUM_NODE_USE_SSL      = (ENV['ETHEREUM_NODE_USE_SSL']        || true).freeze
-    ETHEREUM_NODE_RPC_PATH     = (ENV['ETHEREUM_NODE_RPC_PATH']       || '/').freeze
+  # README:
+  # If you’re using Infura.io for your host, you’ll need to get an API key from their website.
+  # Your Infura API key then needs to go into your .env file with a leading slash. For example:
+  #     ETHEREUM_NODE_RPC_PATH = /1e8cfBC369ADDc93d135
+  # Setup in your .env file at the root of this Rails apps
+  ETHEREUM_NODE_HOST         = (ENV['ETHEREUM_NODE_HOST']         || 'mainnet.infura.io').freeze
+  ETHEREUM_NODE_PORT         = (ENV['ETHEREUM_NODE_PORT']         || 443).freeze
+  ETHEREUM_NODE_OPEN_TIMEOUT = (ENV['ETHEREUM_NODE_OPEN_TIMEOUT'] || 20).freeze
+  ETHEREUM_NODE_READ_TIMEOUT = (ENV['ETHEREUM_NODE_READ_TIMEOUT'] || 140).freeze
+  ETHEREUM_NODE_USE_SSL      = (ENV['ETHEREUM_NODE_USE_SSL']      || true).freeze
+  ETHEREUM_NODE_RPC_PATH     = (ENV['ETHEREUM_NODE_RPC_PATH']     || '/').freeze
+  EEFIO_JOB_QUEUE_MAX_SIZE   = (ENV['EEFIO_JOB_QUEUE_MAX_SIZE']   || 10000).to_i.freeze
 
+  class << self
     def get_and_save_raw_block block_number
       raw_block = RawBlock.find_by block_number: block_number
 
@@ -24,15 +25,26 @@ class BlockImporterService
     end
 
     def get_blocks_from_blockchain starting_block_number:, ending_block_number: nil
-      ending_block_number = latest_block_number if ending_block_number.blank?
+      # Don’t try to fetch blocks that don’t exist on the blockchain yet
+      if ending_block_number.blank?
+        ending_block_number = [
+          (starting_block_number + EEFIO_JOB_QUEUE_MAX_SIZE), latest_block_number
+        ].min
+      end
 
       # Work through the blockchain in groups of blocks at a time
       starting_block_number.upto(ending_block_number).each_slice(1000) do |block_numbers|
         block_numbers.each do |block_number|
-          puts "==> Enqueuing ImportRawBlockFromBlockchainJob: block_number: #{block_number}"
+          puts "==> Enqueuing ImportRawBlockFromBlockchainJob for block number: #{block_number}"
           ImportRawBlockFromBlockchainJob.perform_later block_number: block_number
         end
       end
+
+      starting_block_number = ending_block_number + 1
+      ending_block_number   = starting_block_number + EEFIO_JOB_QUEUE_MAX_SIZE
+
+      EnqueueBlockchainSyncJobsJob.perform_later starting_block_number: starting_block_number,
+                                                 ending_block_number:   ending_block_number
     end
 
     def get_block_from_blockchain block_number:
