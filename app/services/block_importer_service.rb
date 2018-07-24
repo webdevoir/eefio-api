@@ -4,13 +4,14 @@ class BlockImporterService
   # Your Infura API key then needs to go into your .env file with a leading slash. For example:
   #     ETHEREUM_NODE_RPC_PATH = /1e8cfBC369ADDc93d135
   # Setup in your .env file at the root of this Rails apps
-  ETHEREUM_NODE_HOST         = (ENV['ETHEREUM_NODE_HOST']         || 'mainnet.infura.io').freeze
-  ETHEREUM_NODE_PORT         = (ENV['ETHEREUM_NODE_PORT']         || 443).freeze
-  ETHEREUM_NODE_OPEN_TIMEOUT = (ENV['ETHEREUM_NODE_OPEN_TIMEOUT'] || 20).freeze
-  ETHEREUM_NODE_READ_TIMEOUT = (ENV['ETHEREUM_NODE_READ_TIMEOUT'] || 140).freeze
-  ETHEREUM_NODE_USE_SSL      = (ENV['ETHEREUM_NODE_USE_SSL']      || true).freeze
-  ETHEREUM_NODE_RPC_PATH     = (ENV['ETHEREUM_NODE_RPC_PATH']     || '/').freeze
-  EEFIO_JOB_QUEUE_MAX_SIZE   = (ENV['EEFIO_JOB_QUEUE_MAX_SIZE']   || 10000).to_i.freeze
+  ETHEREUM_NODE_HOST          = (ENV['ETHEREUM_NODE_HOST']          || 'mainnet.infura.io').freeze
+  ETHEREUM_NODE_PORT          = (ENV['ETHEREUM_NODE_PORT']          || 443).freeze
+  ETHEREUM_NODE_OPEN_TIMEOUT  = (ENV['ETHEREUM_NODE_OPEN_TIMEOUT']  || 20).freeze
+  ETHEREUM_NODE_READ_TIMEOUT  = (ENV['ETHEREUM_NODE_READ_TIMEOUT']  || 140).freeze
+  ETHEREUM_NODE_USE_SSL       = (ENV['ETHEREUM_NODE_USE_SSL']       || true).freeze
+  ETHEREUM_NODE_RPC_PATH      = (ENV['ETHEREUM_NODE_RPC_PATH']      || '/').freeze
+  EEFIO_JOB_QUEUE_MAX_SIZE    = (ENV['EEFIO_JOB_QUEUE_MAX_SIZE']    || 10000).to_i.freeze
+  EEFIO_SECONDS_FOR_NEW_BLOCK = (ENV['EEFIO_SECONDS_FOR_NEW_BLOCK'] || 12).to_i.freeze
 
   class << self
     def get_and_save_raw_block block_number
@@ -43,6 +44,21 @@ class BlockImporterService
       starting_block_number = ending_block_number + 1
       ending_block_number   = starting_block_number + EEFIO_JOB_QUEUE_MAX_SIZE
 
+      sleep_if_necessary
+
+      enqueue_next_batch starting_block_number: starting_block_number,
+                         ending_block_number:   ending_block_number
+    end
+
+    def sleep_if_necessary
+      # When synced up with the blockchain, wait for a new block to be added before trying again
+      if latest_raw_block_number == get_latest_block_number
+        puts "!!! Sleeping for #{EEFIO_SECONDS_FOR_NEW_BLOCK} seconds"
+        sleep EEFIO_SECONDS_FOR_NEW_BLOCK
+      end
+    end
+
+    def enqueue_next_batch starting_block_number:, ending_block_number:
       EnqueueBlockchainSyncJobsJob.perform_later starting_block_number: starting_block_number,
                                                  ending_block_number:   ending_block_number
     end
@@ -60,7 +76,11 @@ class BlockImporterService
 
     def latest_block_number
       # Get latest block number from the blockchain
-      @latest_block_number ||= web3.eth.blockNumber
+      @latest_block_number ||= get_latest_block_number
+    end
+
+    def get_latest_block_number
+      web3.eth.blockNumber
     end
 
     def latest_raw_block_number
