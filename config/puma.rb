@@ -30,5 +30,15 @@ environment ENV.fetch("RAILS_ENV") { "development" }
 #
 # preload_app!
 
+on_worker_boot do
+  @sidekiq_pid ||= spawn('bundle exec sidekiq -c 2 -t 25')
+  ActiveRecord::Base.establish_connection if defined?(ActiveRecord)
+end
+
+on_restart do
+  Sidekiq.redis.shutdown { |conn| conn.close }
+end
+
+
 # Allow puma to be restarted by `rails restart` command.
 plugin :tmp_restart
