@@ -13,9 +13,7 @@ class BlockImporterService
     ETHEREUM_NODE_RPC_PATH     = (ENV['ETHEREUM_NODE_RPC_PATH']       || '/').freeze
 
     def get_and_save_raw_block block_number
-      raw_block = ActiveRecord::Base.connection_pool.with_connection do
-        RawBlock.find_by(block_number: block_number)
-      end
+      raw_block = RawBlock.find_by block_number: block_number
 
       if raw_block.present?
         puts "___ RawBlock already exists: #{block_number}"
@@ -43,11 +41,9 @@ class BlockImporterService
     end
 
     def create_raw_block_from block:
-      ActiveRecord::Base.connection_pool.with_connection do
-        # Save the block to the raw_blocks table in the database
-        raw_block = RawBlock.create block_number: block.block_number, content: block.raw_data.to_json
-        puts "+++ Saved block: #{raw_block.block_number}" if raw_block.created_at.present?
-      end
+      # Save the block to the raw_blocks table in the database
+      raw_block = RawBlock.create block_number: block.block_number, content: block.raw_data.to_json
+      puts "+++ Saved block: #{raw_block.block_number}" if raw_block.created_at.present?
     end
 
     def latest_block_number
