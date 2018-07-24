@@ -11,7 +11,6 @@ class BlockImporterService
     ETHEREUM_NODE_READ_TIMEOUT = (ENV['ETHEREUM_NODE_READ_TIMEOUT']   || 140).freeze
     ETHEREUM_NODE_USE_SSL      = (ENV['ETHEREUM_NODE_USE_SSL']        || true).freeze
     ETHEREUM_NODE_RPC_PATH     = (ENV['ETHEREUM_NODE_RPC_PATH']       || '/').freeze
-    EEFIO_HTTP_THREAD_COUNT    = (ENV['EEFIO_HTTP_THREAD_COUNT'].to_i || 100).freeze
 
     def get_and_save_raw_block block_number
       raw_block = ActiveRecord::Base.connection_pool.with_connection do
@@ -29,32 +28,12 @@ class BlockImporterService
     def get_blocks_from_blockchain starting_block_number:, ending_block_number: nil
       ending_block_number = latest_block_number if ending_block_number.blank?
 
-      # Use larger batches when working synchronously
-      slice_size = (EEFIO_HTTP_THREAD_COUNT == 1 ? 1000 : EEFIO_HTTP_THREAD_COUNT)
-
       # Work through the blockchain in groups of blocks at a time
-      starting_block_number.upto(ending_block_number).each_slice(slice_size) do |block_numbers|
-        if EEFIO_HTTP_THREAD_COUNT == 1
-          # Synchronous
-          puts "Fetching and saving blocks one by one…"
-          block_numbers.each { |bn| get_and_save_raw_block bn }
-        else
-          # Asynchronous
-          # Create all of the promises of work to do: get a block, save it to the database
-          # Then do the work in all of the promises: get a block, save it to the database
-          puts "Making and keeping promises…"
-          promises = block_numbers.map do |bn|
-            Concurrent::Promise.execute { get_and_save_raw_block bn }
-          end
-
-          # Block here until all of the promises have completed their work
-          promises.each &:value
+      starting_block_number.upto(ending_block_number).each_slice(1000) do |block_numbers|
+        block_numbers.each do |block_number|
+          puts "==> Enqueuing ImportRawBlockFromBlockchainJob: block_number: #{block_number}"
+          ImportRawBlockFromBlockchainJob.perform_later block_number: block_number
         end
-
-        puts
-        puts "RawBlocks now in the database: #{raw_blocks_count}"
-
-        save_in_sync_block_number
       end
     end
 
@@ -71,12 +50,6 @@ class BlockImporterService
         # Save the block to the raw_blocks table in the database
         raw_block = RawBlock.create block_number: block.block_number, content: block.raw_data.to_json
         puts "+++ Saved block: #{raw_block.block_number}" if raw_block.created_at.present?
-      end
-    end
-
-    def promise_to_create_raw_block block_number
-      Concurrent::Promise.new(executor: thread_pool_executor) do
-        get_and_save_raw_block block_number
       end
     end
 
@@ -114,18 +87,6 @@ class BlockImporterService
         # Go get them and save them
         fetch_missing_raw_blocks
       end
-    end
-
-    def thread_pool_executor
-      # Use our own thread pool
-      @thread_pool_executor = Concurrent::ThreadPoolExecutor.new(
-                                min_threads:     [2, Concurrent.processor_count].max,
-                                max_threads:     100,
-                                auto_terminate:  true,
-                                idletime:        60,    # 1 minute
-                                max_queue:       0,     # unlimited
-                                fallback_policy: :abort # shouldn't matter with '0 max queue'
-                              )
     end
 
     def update_raw_blocks_previous_synced_at_block_number_setting! block_number:

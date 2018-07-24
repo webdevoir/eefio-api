@@ -66,10 +66,11 @@ class BlockExtractorService
         block.send("#{block_attr}=", raw_block_content[raw_block_attr].from_hex)
       end
 
-      # Block#published_at is a special case because it’s store as DateTime object
+      # Block#published_at is a special case because it’s stored as DateTime object
       block.published_at = Time.at raw_block_content[:timestamp].from_hex
 
-      # Ensure that BOTH the Block is created and the RawBlock is updated together
+      # Ensure that BOTH happen together:
+      # The Block is created and the RawBlock is updated
       Block.transaction do
         # Save the Block to the database
         block.save
