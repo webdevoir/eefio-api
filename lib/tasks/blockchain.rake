@@ -10,12 +10,6 @@ namespace :eefio do
 
       starting_block_number = RawBlock.last_in_sync_block_number
       BlockImporterService.get_blocks_from_blockchain starting_block_number: starting_block_number
-
-      puts
-      puts 'When in sync, latest block number is -1 of RawBlocks count'
-      puts "RawBlocks now in the database:                 #{BlockImporterService.raw_blocks_count}"
-      puts "Latest block on blockchain (at start of sync): #{BlockImporterService.latest_block_number}"
-      puts
     end
   end
 end

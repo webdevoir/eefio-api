@@ -18,7 +18,7 @@ class BlockImporterService
       end
 
       if raw_block.present?
-        puts "RawBlock already exists: #{block_number}"
+        puts "___ RawBlock already exists: #{block_number}"
       else
         block = get_block_from_blockchain block_number: block_number
         create_raw_block_from block: block
@@ -39,10 +39,7 @@ class BlockImporterService
 
     def get_block_from_blockchain block_number:
       puts "==> Fetching block from chain: #{block_number}"
-      block = web3.eth.getBlockByNumber block_number
-
-      puts block.inspect
-      block
+      web3.eth.getBlockByNumber block_number
     end
 
     def create_raw_block_from block:
