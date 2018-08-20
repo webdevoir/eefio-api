@@ -34,7 +34,7 @@ class BlockImporterService
       end
 
       # Work through the blockchain in groups of blocks at a time
-      starting_block_number.upto(ending_block_number).each_slice(1000) do |block_numbers|
+      starting_block_number.upto(ending_block_number).each_slice(EEFIO_JOB_QUEUE_MAX_SIZE) do |block_numbers|
         block_numbers.each do |block_number|
           puts "==> Enqueuing ImportRawBlockFromBlockchainJob for block number: #{block_number}"
           ImportRawBlockFromBlockchainJob.perform_later block_number: block_number
