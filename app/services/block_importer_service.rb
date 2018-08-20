@@ -52,7 +52,7 @@ class BlockImporterService
 
     def sleep_if_necessary
       # # When synced up with the blockchain, wait for a new block to be added before trying again
-      # if latest_raw_block_number == get_latest_block_number
+      # if RawBlock.latest_block_number == get_latest_block_number
       #   puts "!!! Sleeping for #{EEFIO_SECONDS_FOR_NEW_BLOCK} seconds"
       #   sleep EEFIO_SECONDS_FOR_NEW_BLOCK
       # end
@@ -85,18 +85,13 @@ class BlockImporterService
       web3.eth.blockNumber
     end
 
-    def latest_raw_block_number
-      # Get the latest RawBlock’s block_number in the database
-      RawBlock.order(block_number: :desc).limit(1).first&.block_number || 0
-    end
-
     def raw_blocks_count
       # Get the count of RawBlocks from the database
       RawBlock.count || 0
     end
 
     # def save_in_sync_block_number
-    #   block_number = latest_raw_block_number
+    #   block_number = RawBlock.latest_block_number
     #   puts
     #   puts "Block Number: #{block_number}"
     #   puts "Raw Blocks Count: #{raw_blocks_count}"
@@ -104,7 +99,7 @@ class BlockImporterService
     #
     #   # Update last synced block number setting.
     #   # The +1 is because the first block is 0.
-    #   # Eg, If latest_raw_block_number is 2. The database will have be RawBlocks: 0, 1, 2.
+    #   # Eg, If RawBlock.latest_block_number is 2. The database will have be RawBlocks: 0, 1, 2.
     #   if raw_blocks_count == (block_number + 1)
     #     puts "Saving last synced block number setting…"
     #     update_raw_blocks_previous_synced_at_block_number_setting! block_number: block_number
