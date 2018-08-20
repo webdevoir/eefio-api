@@ -1,5 +1,5 @@
 class RawBlock < ApplicationRecord
-  validates :block_number, presence: true, uniqueness: true
+  validates :block_number, presence: true # , uniqueness: true
   after_create :extract_block
 
   class << self
