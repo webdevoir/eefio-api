@@ -51,11 +51,13 @@ class BlockImporterService
     end
 
     def sleep_if_necessary
-      # When synced up with the blockchain, wait for a new block to be added before trying again
-      if latest_raw_block_number == get_latest_block_number
-        puts "!!! Sleeping for #{EEFIO_SECONDS_FOR_NEW_BLOCK} seconds"
-        sleep EEFIO_SECONDS_FOR_NEW_BLOCK
-      end
+      # # When synced up with the blockchain, wait for a new block to be added before trying again
+      # if latest_raw_block_number == get_latest_block_number
+      #   puts "!!! Sleeping for #{EEFIO_SECONDS_FOR_NEW_BLOCK} seconds"
+      #   sleep EEFIO_SECONDS_FOR_NEW_BLOCK
+      # end
+
+      sleep EEFIO_SECONDS_FOR_NEW_BLOCK
     end
 
     def enqueue_next_batch starting_block_number:, ending_block_number:
@@ -93,26 +95,26 @@ class BlockImporterService
       RawBlock.count || 0
     end
 
-    def save_in_sync_block_number
-      block_number = latest_raw_block_number
-      puts
-      puts "Block Number: #{block_number}"
-      puts "Raw Blocks Count: #{raw_blocks_count}"
-      puts
-
-      # Update last synced block number setting.
-      # The +1 is because the first block is 0.
-      # Eg, If latest_raw_block_number is 2. The database will have be RawBlocks: 0, 1, 2.
-      if raw_blocks_count == (block_number + 1)
-        puts "Saving last synced block number setting…"
-        update_raw_blocks_previous_synced_at_block_number_setting! block_number: block_number
-      else
-        # There are some gaps in the RawBlocks table
-        # Figure out which ones are missing
-        # Go get them and save them
-        fetch_missing_raw_blocks
-      end
-    end
+    # def save_in_sync_block_number
+    #   block_number = latest_raw_block_number
+    #   puts
+    #   puts "Block Number: #{block_number}"
+    #   puts "Raw Blocks Count: #{raw_blocks_count}"
+    #   puts
+    #
+    #   # Update last synced block number setting.
+    #   # The +1 is because the first block is 0.
+    #   # Eg, If latest_raw_block_number is 2. The database will have be RawBlocks: 0, 1, 2.
+    #   if raw_blocks_count == (block_number + 1)
+    #     puts "Saving last synced block number setting…"
+    #     update_raw_blocks_previous_synced_at_block_number_setting! block_number: block_number
+    #   else
+    #     # There are some gaps in the RawBlocks table
+    #     # Figure out which ones are missing
+    #     # Go get them and save them
+    #     fetch_missing_raw_blocks
+    #   end
+    # end
 
     def update_raw_blocks_previous_synced_at_block_number_setting! block_number:
       setting = Setting.find_by name: 'raw_blocks_previous_synced_at_block_number'
@@ -126,28 +128,28 @@ class BlockImporterService
       setting.update content: block_number
     end
 
-    def missing_raw_blocks
-      existing_raw_block_numbers_in_the_db = RawBlock.pluck(:block_number).sort.uniq
-      all_raw_block_numbers                = (RawBlock.last_in_sync_block_number..RawBlock.last.block_number).to_a
+    # def missing_raw_blocks
+    #   existing_raw_block_numbers_in_the_db = RawBlock.pluck(:block_number).sort.uniq
+    #   all_raw_block_numbers                = (RawBlock.last_in_sync_block_number..RawBlock.last.block_number).to_a
+    #
+    #   (all_raw_block_numbers - existing_raw_block_numbers_in_the_db).compact
+    # end
 
-      (all_raw_block_numbers - existing_raw_block_numbers_in_the_db).compact
-    end
-
-    def fetch_missing_raw_blocks
-      if missing_raw_blocks.present?
-        puts "!!! Missing blocks:"
-        puts "  #{missing_raw_blocks}"
-      end
-
-      missing_raw_blocks.each do |block_number|
-        puts "!!! Raw Block is missing: #{block_number}"
-        get_and_save_raw_block block_number
-      end
-
-      # Try to save in sync block number again
-      # This will loop back and forth until all the missing blocks are fetched
-      save_in_sync_block_number
-    end
+    # def fetch_missing_raw_blocks
+    #   if missing_raw_blocks.present?
+    #     puts "!!! Missing blocks:"
+    #     puts "  #{missing_raw_blocks}"
+    #   end
+    #
+    #   missing_raw_blocks.each do |block_number|
+    #     puts "!!! Raw Block is missing: #{block_number}"
+    #     get_and_save_raw_block block_number
+    #   end
+    #
+    #   # Try to save in sync block number again
+    #   # This will loop back and forth until all the missing blocks are fetched
+    #   save_in_sync_block_number
+    # end
 
     def web3
       # Connect to the Ethereum node via Web3 / RPC
