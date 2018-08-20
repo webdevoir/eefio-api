@@ -15,14 +15,14 @@ class BlockImporterService
 
   class << self
     def get_and_save_raw_block block_number
-      raw_block = RawBlock.find_by block_number: block_number
+      # raw_block = RawBlock.find_by block_number: block_number
 
-      if raw_block.present?
-        puts "___ RawBlock already exists: #{block_number}"
-      else
+      # if raw_block.present?
+      #   puts "___ RawBlock already exists: #{block_number}"
+      # else
         block = get_block_from_blockchain block_number: block_number
         create_raw_block_from block: block
-      end
+      # end
     end
 
     def get_blocks_from_blockchain starting_block_number:, ending_block_number: nil
