@@ -27,9 +27,16 @@ namespace :eefio do
 
         # Fetch the RawBlock from the blockchain
         puts '*'*80
-        p block_number
+        puts block_number
         puts '*'*80
-        BlockImporterService.get_and_save_raw_block block_number
+
+        begin
+          BlockImporterService.get_and_save_raw_block block_number
+        rescue Timeout::Error
+          puts "!!! Network request timed out. Adding to range to try again. block_number: #{block_number}"
+          missing_block_numbers.unshift block_number
+          next
+        end
 
         # Check for in sync block RawBlocks between
         # the last in sync RawBlock block_number and the current block_number
