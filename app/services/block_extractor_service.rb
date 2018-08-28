@@ -67,7 +67,7 @@ class BlockExtractorService
       end
 
       # Block#published_at is a special case because it’s stored as DateTime object
-      block.published_at = Time.at raw_block_content[:timestamp].from_hex
+      block.published_at = Time.zone.at raw_block_content[:timestamp].from_hex
 
       # Ensure that BOTH happen together:
       # The Block is created and the RawBlock is updated
