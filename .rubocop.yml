@@ -102,3 +102,11 @@ RSpec/VerifiedDoubles:
 
 RSpec/MessageSpies:
   Enabled: false
+
+# Allows puts() instead of logger.info()
+# TODO: move to the STD_OUT Rails logger
+Rails/Output:
+  Exclude:
+    - 'app/jobs/enqueue_blockchain_sync_jobs_job.rb'
+    - 'app/models/ethereum.rb'
+    - 'app/services/block_importer_service.rb'

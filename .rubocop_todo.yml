@@ -11,12 +11,3 @@ Lint/ShadowingOuterLocalVariable:
   Exclude:
     - 'app/services/block_importer_service.rb'
     - 'lib/tasks/raw_blocks.rake'
-
-# Offense count: 6
-# Configuration parameters: Include.
-# Include: app/**/*.rb, config/**/*.rb, db/**/*.rb, lib/**/*.rb
-Rails/Output:
-  Exclude:
-    - 'app/jobs/enqueue_blockchain_sync_jobs_job.rb'
-    - 'app/models/ethereum.rb'
-    - 'app/services/block_importer_service.rb'
