@@ -17,12 +17,12 @@ namespace :eefio do
       # the range of RawBlocks min/max and the actual RawBlocks in the database
       saved_raw_block_numbers = RawBlock.pluck(:block_number).uniq.sort
       all_raw_block_numbers   = (start..finish).to_a
-      missing_block_numbers   = all_raw_block_numbers - saved_raw_block_numbers
+      block_numbers_to_fetch   = all_raw_block_numbers - saved_raw_block_numbers
 
-      # Go through all of those missing_block_numbers
+      # Go through all of those block_numbers_to_fetch
       loop do
-        # Get current block_number from the front of missing_block_numbers array
-        block_number = missing_block_numbers.shift
+        # Get current block_number from the front of block_numbers_to_fetch array
+        block_number = block_numbers_to_fetch.shift
         break if block_number.blank?
 
         # Fetch the RawBlock from the blockchain
@@ -34,7 +34,7 @@ namespace :eefio do
           BlockImporterService.get_and_save_raw_block block_number
         rescue Timeout::Error
           puts "!!! Network request timed out. Adding to range to try again. block_number: #{block_number}"
-          missing_block_numbers.unshift block_number
+          block_numbers_to_fetch.unshift block_number
           next
         end
 
@@ -52,13 +52,13 @@ namespace :eefio do
             synced_block_number.update content: raw_block.block_number
             puts "+++ Updated Setting(raw_blocks_previous_synced_at_block_number) to: #{raw_block.block_number}"
           else
-            # If not, add that block_number to the front of the missing_block_numbers array to try fetching it again
+            # If not, add that block_number to the front of the block_numbers_to_fetch array to try fetching it again
             puts "!!! RawBlock missing. Adding to range to try again. block_number: #{block_number}"
-            missing_block_numbers.unshift block_number
+            block_numbers_to_fetch.unshift block_number
           end
         end
 
-        # Once missing_block_numbers is empty [], quit!
+        # Once block_numbers_to_fetch is empty [], quit!
         break if block_number.blank?
       end
 
