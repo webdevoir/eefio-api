@@ -1,4 +1,7 @@
 class BlockImporterService
+  # TODO: this smells bad
+  @block_numbers_to_fetch = []
+
   class << self
     # BlockImporterService.fetch_blocks_from_blockchain
     # # => Starts at: 0. Ends at: the current latest Ethereum block number
@@ -29,12 +32,12 @@ class BlockImporterService
       end
 
       # Setup batch of block numbers to work through
-      block_numbers_to_fetch = block_numbers&.uniq&.sort || (starting_block_number..ending_block_number).to_a
+      @block_numbers_to_fetch = block_numbers&.uniq&.sort || (starting_block_number..ending_block_number).to_a
 
-      # Go through all of those block_numbers_to_fetch
+      # Go through all of those @block_numbers_to_fetch
       loop do
-        # Get current block_number from the front of block_numbers_to_fetch array
-        block_number = block_numbers_to_fetch.shift
+        # Get current block_number from the front of @block_numbers_to_fetch array
+        block_number = @block_numbers_to_fetch.shift
         break if block_number.blank?
 
         # Fetch the RawBlock from the blockchain
@@ -42,7 +45,9 @@ class BlockImporterService
           blockchain_block = Ethereum.get_block block_number: block_number
         rescue Timeout::Error
           puts "!!! Network request timed out. Adding to range to try again. block_number: #{block_number}"
-          block_numbers_to_fetch.unshift block_number
+          @@block_numbers_to_fetch.unshift block_number
+
+          sleep 1
           next
         end
 
@@ -55,22 +60,38 @@ class BlockImporterService
         finish_again = block_number
 
         (start_again..finish_again).each do |block_number_again|
-          # Double check that it’s in the database
-          raw_block = RawBlock.find_by block_number: block_number_again
-
-          # If it is, update the setting for in sync RawBlock block_number
-          if raw_block.present?
-            update_raw_blocks_synced_at_block_number_setting! block_number: raw_block.block_number
-          else
-            # If not, add that block_number to the front of the block_numbers_to_fetch array to try fetching it again
-            puts "!!! RawBlock missing. Adding to range to try again. block_number: #{block_number_again}"
-            block_numbers_to_fetch.unshift block_number_again
-          end
+          check_raw_blocks_synced_at_block_number_setting block_number: block_number_again
         end
 
-        # Once block_numbers_to_fetch is empty [], quit!
+        # Once @block_numbers_to_fetch is empty [], quit!
         break if block_number.blank?
       end
+    end
+
+    def check_raw_blocks_synced_at_block_number_setting block_number:
+      # Double check that it’s in the database
+      raw_block = RawBlock.find_by block_number: block_number
+
+      # If it is, update the setting for in sync RawBlock block_number
+      if raw_block.present?
+        update_raw_blocks_synced_at_block_number_setting! block_number: raw_block.block_number
+      else
+        # If not, add that block_number to the front of the @block_numbers_to_fetch array to try fetching it again
+        puts "!!! RawBlock missing. Adding to range to try again. block_number: #{block_number}"
+        @block_numbers_to_fetch.unshift block_number
+      end
+    end
+
+    def raw_blocks_in_sync?
+      RawBlock.latest_block_number == Setting.raw_blocks_synced_at_block_number.content.to_i
+    end
+
+    def raw_blocks_synced_with_blockchain?
+      RawBlock.latest_block_number == Ethereum.fetch_latest_block_number
+    end
+
+    def clean_slate?
+      RawBlock.latest_block_number.zero? && Setting.raw_blocks_synced_at_block_number.content.to_i.zero?
     end
 
     def create_raw_block_from blockchain_block:

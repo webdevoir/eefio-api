@@ -3,7 +3,8 @@ class Ethereum
   # If you’re using Infura.io for your host, you’ll need to get an API key from their website.
   # Your Infura API key then needs to go into your .env file with a leading slash. For example:
   #     ETHEREUM_NODE_RPC_PATH = /1e8cfBC369ADDc93d135
-  # Setup in your .env file at the root of this Rails apps
+  #
+  # Setup in your .env file at the root of this Rails app
   ETHEREUM_NODE_HOST         = (ENV['ETHEREUM_NODE_HOST']         || 'mainnet.infura.io').freeze
   ETHEREUM_NODE_PORT         = (ENV['ETHEREUM_NODE_PORT']         || 443).freeze
   ETHEREUM_NODE_OPEN_TIMEOUT = (ENV['ETHEREUM_NODE_OPEN_TIMEOUT'] || 20).freeze
