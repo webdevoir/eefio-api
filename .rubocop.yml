@@ -41,7 +41,7 @@ Metrics/LineLength:
   Max: 160
 
 Metrics/MethodLength:
-  Max: 25
+  Max: 45
 
 Metrics/BlockLength:
   Max: 140

@@ -12,11 +12,6 @@ Lint/ShadowingOuterLocalVariable:
     - 'app/services/block_importer_service.rb'
     - 'lib/tasks/raw_blocks.rake'
 
-# Offense count: 2
-# Configuration parameters: CountComments.
-Metrics/MethodLength:
-  Max: 45
-
 # Offense count: 6
 # Configuration parameters: Include.
 # Include: app/**/*.rb, config/**/*.rb, db/**/*.rb, lib/**/*.rb
