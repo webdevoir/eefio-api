@@ -13,7 +13,6 @@ class BlockImporterService
     # BlockImporterService.get_blocks_from_blockchain block_numbers:         [1, 2, 3, 5, 8]
     # # => Only fetches block numbers: 1, 2, 3, 5, 8
 
-
     # The block_numbers param takes precedence over starting/ending_block_number
     def get_blocks_from_blockchain starting_block_number: nil, ending_block_number: nil, block_numbers: nil
       # Set fallback ending_block_number if it’s blank or zero

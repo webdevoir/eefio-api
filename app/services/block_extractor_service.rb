@@ -61,7 +61,7 @@ class BlockExtractorService
         nonce:                               :nonce,
         published_at_in_seconds_since_epoch: :timestamp,
         size_in_bytes:                       :size,
-        total_difficulty:                    :totalDifficulty,
+        total_difficulty:                    :totalDifficulty
       }.each do |block_attr, raw_block_attr|
         block.send("#{block_attr}=", raw_block_content[raw_block_attr].from_hex)
       end

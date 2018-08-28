@@ -36,7 +36,7 @@ on_worker_boot do
 end
 
 on_restart do
-  Sidekiq.redis.shutdown { |conn| conn.close }
+  Sidekiq.redis.shutdown(&:close)
 end
 
 # Allow puma to be restarted by `rails restart` command.

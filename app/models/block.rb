@@ -1,7 +1,7 @@
 class Block < ApplicationRecord
-  validates :block_number,        presence: true #, uniqueness: true
-  validates :block_number_in_hex, presence: true #, uniqueness: true
-  validates :address,             presence: true #, uniqueness: true
+  validates :block_number,        presence: true
+  validates :block_number_in_hex, presence: true
+  validates :address,             presence: true
 
   URL_NAMESPACE = 'blocks'.freeze
 
@@ -21,13 +21,9 @@ class Block < ApplicationRecord
     links[:self]  = url_for(identifier: identifier, block: self)
     links[:first] = url_for(identifier: identifier, block: Block.first_block)
 
-    unless previous_block == self || previous_block.blank?
-      links[:previous] = url_for(identifier: identifier, block: previous_block)
-    end
+    links[:previous] = url_for(identifier: identifier, block: previous_block) unless previous_block == self || previous_block.blank?
 
-    unless next_block == self || next_block.blank?
-      links[:next] = url_for(identifier: identifier, block: next_block)
-    end
+    links[:next] = url_for(identifier: identifier, block: next_block) unless next_block == self || next_block.blank?
 
     links[:last] = url_for(identifier: identifier, block: Block.last_block)
 

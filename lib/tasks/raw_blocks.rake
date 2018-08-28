@@ -2,7 +2,6 @@ namespace :eefio do
   namespace :raw_blocks do
     desc 'Starts at the start and finds missing raw_blocks in the database, fetches them from blockchain'
     task fetch_missing: :environment do
-
       # Get in sync RawBlock setting
       synced_block_number = Setting.find_by name: 'raw_blocks_synced_at_block_number'
 
@@ -17,7 +16,7 @@ namespace :eefio do
       # the range of RawBlocks min/max and the actual RawBlocks in the database
       saved_raw_block_numbers = RawBlock.pluck(:block_number).uniq.sort
       all_raw_block_numbers   = (start..finish).to_a
-      block_numbers_to_fetch   = all_raw_block_numbers - saved_raw_block_numbers
+      block_numbers_to_fetch = all_raw_block_numbers - saved_raw_block_numbers
 
       # Go through all of those block_numbers_to_fetch
       loop do

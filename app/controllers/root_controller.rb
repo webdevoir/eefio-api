@@ -8,7 +8,7 @@ class RootController < ApplicationController
         http_verb:    'GET',
         url:          api_url_for(name: endpoint[:name]),
         documenation: documenation_url_for(name: endpoint[:name]),
-        description:  endpoint[:description],
+        description:  endpoint[:description]
       }
     end
   end
@@ -18,8 +18,8 @@ class RootController < ApplicationController
   end
 
   def api_url_for name:
-    [Eefio::API_URL, name.split('#')].join('/').
-      gsub('/one', '/:identifier').
-      gsub('/root', '')
+    [Eefio::API_URL, name.split('#')].join('/')
+                                     .gsub('/one', '/:identifier')
+                                     .gsub('/root', '')
   end
 end
