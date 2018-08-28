@@ -1,6 +1,4 @@
 class BlockImporterService
-  EEFIO_JOB_QUEUE_MAX_SIZE = (ENV['EEFIO_JOB_QUEUE_MAX_SIZE'] || 10000).to_i.freeze
-
   class << self
     # BlockImporterService.get_blocks_from_blockchain
     # # => Starts at: 0. Ends at: the current latest Ethereum block number
