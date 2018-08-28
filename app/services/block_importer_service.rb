@@ -41,10 +41,6 @@ class BlockImporterService
         break if block_number.blank?
 
         # Fetch the RawBlock from the blockchain
-        puts '*'*80
-        puts block_number
-        puts '*'*80
-
         begin
           blockchain_block = Ethereum.get_block block_number: block_number
           create_raw_block_from blockchain_block: blockchain_block
@@ -66,7 +62,6 @@ class BlockImporterService
           # If it is, update the setting for in sync RawBlock block_number
           if raw_block.present?
             update_raw_blocks_synced_at_block_number_setting! block_number: raw_block.block_number
-            puts "+++ Updated Setting(raw_blocks_synced_at_block_number) to: #{raw_block.block_number}"
           else
             # If not, add that block_number to the front of the block_numbers_to_fetch array to try fetching it again
             puts "!!! RawBlock missing. Adding to range to try again. block_number: #{block_number}"
@@ -89,9 +84,7 @@ class BlockImporterService
       setting = Setting.raw_blocks_synced_at_block_number
       return if setting.content.to_i == block_number
 
-      puts
-      puts "==> Updating Setting: raw_blocks_synced_at_block_number: #{block_number}"
-      puts
+      puts "+++ Updating Setting: raw_blocks_synced_at_block_number: #{block_number}"
 
       setting.update content: block_number
     end

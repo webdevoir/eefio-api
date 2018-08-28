@@ -26,10 +26,6 @@ namespace :eefio do
         break if block_number.blank?
 
         # Fetch the RawBlock from the blockchain
-        puts '*'*80
-        puts block_number
-        puts '*'*80
-
         begin
           BlockImporterService.get_and_save_raw_block block_number
         rescue Timeout::Error
@@ -50,7 +46,6 @@ namespace :eefio do
           # If it is, update the setting for in sync RawBlock block_number
           if raw_block.present?
             synced_block_number.update content: raw_block.block_number
-            puts "+++ Updated Setting(raw_blocks_synced_at_block_number) to: #{raw_block.block_number}"
           else
             # If not, add that block_number to the front of the block_numbers_to_fetch array to try fetching it again
             puts "!!! RawBlock missing. Adding to range to try again. block_number: #{block_number}"
