@@ -4,7 +4,7 @@ class BlockImporterService
     # # => Starts at: 0. Ends at: the current latest Ethereum block number
 
     # BlockImporterService.fetch_blocks_from_blockchain starting_block_number: 0,
-    #                                                 ending_block_number:   2
+    #                                                   ending_block_number:   2
     # # => Starts at: 0. Ends at: 2.
 
     # BlockImporterService.fetch_blocks_from_blockchain starting_block_number: 1312
@@ -40,12 +40,14 @@ class BlockImporterService
         # Fetch the RawBlock from the blockchain
         begin
           blockchain_block = Ethereum.get_block block_number: block_number
-          create_raw_block_from blockchain_block: blockchain_block
         rescue Timeout::Error
           puts "!!! Network request timed out. Adding to range to try again. block_number: #{block_number}"
           block_numbers_to_fetch.unshift block_number
           next
         end
+
+        # Save the blockchain_block to the raw_blocks table in the database
+        create_raw_block_from blockchain_block: blockchain_block
 
         # Check for in sync block RawBlocks between
         # the last in sync RawBlock block_number and the current block_number
