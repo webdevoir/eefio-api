@@ -15,12 +15,7 @@ Lint/ShadowingOuterLocalVariable:
 # Offense count: 2
 # Configuration parameters: CountComments.
 Metrics/MethodLength:
-  Max: 42
-
-# Offense count: 1
-Naming/AccessorMethodName:
-  Exclude:
-    - 'app/models/ethereum.rb'
+  Max: 45
 
 # Offense count: 6
 # Configuration parameters: Include.

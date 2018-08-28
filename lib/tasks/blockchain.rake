@@ -12,13 +12,13 @@ namespace :eefio do
       puts
 
       starting_block_number = latest_raw_block_number
-      ending_block_number   = Ethereum.get_latest_block_number
+      ending_block_number   = Ethereum.fetch_latest_block_number
 
       puts "___ Getting RawBlocks for block numbers: #{starting_block_number} - #{ending_block_number}"
       puts
 
-      BlockImporterService.get_blocks_from_blockchain starting_block_number: starting_block_number,
-                                                      ending_block_number:   ending_block_number
+      BlockImporterService.fetch_blocks_from_blockchain starting_block_number: starting_block_number,
+                                                        ending_block_number:   ending_block_number
     end
   end
 end

@@ -16,7 +16,7 @@ namespace :eefio do
       # the range of RawBlocks min/max and the actual RawBlocks in the database
       saved_raw_block_numbers = RawBlock.uniq.pluck(:block_number).sort
       all_raw_block_numbers   = (start..finish).to_a
-      block_numbers_to_fetch = all_raw_block_numbers - saved_raw_block_numbers
+      block_numbers_to_fetch  = all_raw_block_numbers - saved_raw_block_numbers
 
       # Go through all of those block_numbers_to_fetch
       loop do

@@ -24,7 +24,7 @@ class Ethereum
                                    }
     end
 
-    def get_latest_block_number
+    def fetch_latest_block_number
       web3.eth.blockNumber
     end
 

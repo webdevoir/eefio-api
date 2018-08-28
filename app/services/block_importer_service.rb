@@ -1,22 +1,22 @@
 class BlockImporterService
   class << self
-    # BlockImporterService.get_blocks_from_blockchain
+    # BlockImporterService.fetch_blocks_from_blockchain
     # # => Starts at: 0. Ends at: the current latest Ethereum block number
 
-    # BlockImporterService.get_blocks_from_blockchain starting_block_number: 0,
+    # BlockImporterService.fetch_blocks_from_blockchain starting_block_number: 0,
     #                                                 ending_block_number:   2
     # # => Starts at: 0. Ends at: 2.
 
-    # BlockImporterService.get_blocks_from_blockchain starting_block_number: 1312
+    # BlockImporterService.fetch_blocks_from_blockchain starting_block_number: 1312
     # # => Starts at: 1312. Ends at: the latest Ethereum block number
 
-    # BlockImporterService.get_blocks_from_blockchain block_numbers:         [1, 2, 3, 5, 8]
+    # BlockImporterService.fetch_blocks_from_blockchain block_numbers:         [1, 2, 3, 5, 8]
     # # => Only fetches block numbers: 1, 2, 3, 5, 8
 
     # The block_numbers param takes precedence over starting/ending_block_number
-    def get_blocks_from_blockchain starting_block_number: nil, ending_block_number: nil, block_numbers: nil
+    def fetch_blocks_from_blockchain starting_block_number: nil, ending_block_number: nil, block_numbers: nil
       # Set fallback ending_block_number if it’s blank or zero
-      ending_block_number = Ethereum.get_latest_block_number if ending_block_number.blank? || ending_block_number.zero?
+      ending_block_number = Ethereum.fetch_latest_block_number if ending_block_number.blank? || ending_block_number.zero?
 
       # Set fallback ending_block_number if it’s blank
       starting_block_number = 0 if starting_block_number.blank?
