@@ -22,3 +22,5 @@ namespace :eefio do
     end
   end
 end
+
+# rake eefio:queue:clear

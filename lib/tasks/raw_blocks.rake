@@ -2,24 +2,21 @@ namespace :eefio do
   namespace :raw_blocks do
     desc 'Starts at the start and finds missing raw_blocks in the database, fetches them from blockchain'
     task fetch_missing: :environment do
-      # Fetch the latest RawBlock from the blockchain
-      latest_block_number_on_blockchain = BlockImporterService.latest_block_number
-      BlockImporterService.get_and_save_raw_block latest_block_number_on_blockchain
 
-      # Get the in sync RawBlock setting
+      # Get in sync RawBlock setting
       synced_block_number = Setting.find_by name: 'raw_blocks_previous_synced_at_block_number'
 
       # Build range to check within
-      starting_block_number  = synced_block_number.content.to_i
-      finishing_block_number = RawBlock.latest_block_number
+      start  = synced_block_number.content.to_i
+      finish = RawBlock.latest_block_number
 
       # Fallback to something for development and testing
-      finishing_block_number = 20 if Rails.env.development? && finishing_block_number.zero?
+      finish = 20 if Rails.env.development? && finish.zero?
 
       # Find the missing RawBlocks by finding the difference between
       # the range of RawBlocks min/max and the actual RawBlocks in the database
       saved_raw_block_numbers = RawBlock.pluck(:block_number).uniq.sort
-      all_raw_block_numbers   = (starting_block_number..finishing_block_number).to_a
+      all_raw_block_numbers   = (start..finish).to_a
       missing_block_numbers   = all_raw_block_numbers - saved_raw_block_numbers
 
       # Go through all of those missing_block_numbers
