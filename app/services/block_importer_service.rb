@@ -52,17 +52,17 @@ class BlockImporterService
         start_again  = Setting.raw_blocks_synced_at_block_number.content.to_i
         finish_again = block_number
 
-        (start_again..finish_again).each do |block_number|
+        (start_again..finish_again).each do |block_number_again|
           # Double check that it’s in the database
-          raw_block = RawBlock.find_by block_number: block_number
+          raw_block = RawBlock.find_by block_number: block_number_again
 
           # If it is, update the setting for in sync RawBlock block_number
           if raw_block.present?
             update_raw_blocks_synced_at_block_number_setting! block_number: raw_block.block_number
           else
             # If not, add that block_number to the front of the block_numbers_to_fetch array to try fetching it again
-            puts "!!! RawBlock missing. Adding to range to try again. block_number: #{block_number}"
-            block_numbers_to_fetch.unshift block_number
+            puts "!!! RawBlock missing. Adding to range to try again. block_number: #{block_number_again}"
+            block_numbers_to_fetch.unshift block_number_again
           end
         end
 
