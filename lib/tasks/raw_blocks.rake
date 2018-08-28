@@ -4,7 +4,7 @@ namespace :eefio do
     task fetch_missing: :environment do
 
       # Get in sync RawBlock setting
-      synced_block_number = Setting.find_by name: 'raw_blocks_previous_synced_at_block_number'
+      synced_block_number = Setting.find_by name: 'raw_blocks_synced_at_block_number'
 
       # Build range to check within
       start  = synced_block_number.content.to_i
@@ -50,7 +50,7 @@ namespace :eefio do
           # If it is, update the setting for in sync RawBlock block_number
           if raw_block.present?
             synced_block_number.update content: raw_block.block_number
-            puts "+++ Updated Setting(raw_blocks_previous_synced_at_block_number) to: #{raw_block.block_number}"
+            puts "+++ Updated Setting(raw_blocks_synced_at_block_number) to: #{raw_block.block_number}"
           else
             # If not, add that block_number to the front of the block_numbers_to_fetch array to try fetching it again
             puts "!!! RawBlock missing. Adding to range to try again. block_number: #{block_number}"
@@ -62,7 +62,7 @@ namespace :eefio do
         break if block_number.blank?
       end
 
-      synced_block_number = Setting.find_by(name: 'raw_blocks_previous_synced_at_block_number').content.to_i
+      synced_block_number = Setting.find_by(name: 'raw_blocks_synced_at_block_number').content.to_i
       puts "FINISHED! Current in sync RawBlock: #{synced_block_number}"
     end
   end

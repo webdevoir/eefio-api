@@ -1,7 +1,7 @@
 # Add a setting to save the block_number of the last known place
 # where the database was in sync with the blockchain
-puts 'Creating Setting: raw_blocks_previous_synced_at_block_number'
-Setting.find_or_create_by name: 'raw_blocks_previous_synced_at_block_number' do |setting|
+puts 'Creating Setting: raw_blocks_synced_at_block_number'
+Setting.find_or_create_by name: 'raw_blocks_synced_at_block_number' do |setting|
   setting.content     = 0
   setting.data_type   = 'Integer'
   setting.description = 'When the database has the same number of RawBlocks as the largest

@@ -56,7 +56,7 @@ class BlockImporterService
 
         # Check for in sync block RawBlocks between
         # the last in sync RawBlock block_number and the current block_number
-        start_again  = Setting.raw_blocks_previous_synced_at_block_number.content.to_i
+        start_again  = Setting.raw_blocks_synced_at_block_number.content.to_i
         finish_again = block_number
 
         (start_again..finish_again).each do |block_number|
@@ -65,8 +65,8 @@ class BlockImporterService
 
           # If it is, update the setting for in sync RawBlock block_number
           if raw_block.present?
-            update_raw_blocks_previous_synced_at_block_number_setting! block_number: raw_block.block_number
-            puts "+++ Updated Setting(raw_blocks_previous_synced_at_block_number) to: #{raw_block.block_number}"
+            update_raw_blocks_synced_at_block_number_setting! block_number: raw_block.block_number
+            puts "+++ Updated Setting(raw_blocks_synced_at_block_number) to: #{raw_block.block_number}"
           else
             # If not, add that block_number to the front of the block_numbers_to_fetch array to try fetching it again
             puts "!!! RawBlock missing. Adding to range to try again. block_number: #{block_number}"
@@ -85,12 +85,12 @@ class BlockImporterService
       puts "+++ Saved block: #{raw_block.block_number}" if raw_block.created_at.present?
     end
 
-    def update_raw_blocks_previous_synced_at_block_number_setting! block_number:
-      setting = Setting.raw_blocks_previous_synced_at_block_number
+    def update_raw_blocks_synced_at_block_number_setting! block_number:
+      setting = Setting.raw_blocks_synced_at_block_number
       return if setting.content.to_i == block_number
 
       puts
-      puts "==> Updating Setting: raw_blocks_previous_synced_at_block_number: #{block_number}"
+      puts "==> Updating Setting: raw_blocks_synced_at_block_number: #{block_number}"
       puts
 
       setting.update content: block_number

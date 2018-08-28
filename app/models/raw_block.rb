@@ -4,7 +4,7 @@ class RawBlock < ApplicationRecord
 
   class << self
     def last_in_sync_block_number
-      Setting.find_by(name: 'raw_blocks_previous_synced_at_block_number').content.to_i
+      Setting.find_by(name: 'raw_blocks_synced_at_block_number').content.to_i
     end
 
     def latest_block_number
