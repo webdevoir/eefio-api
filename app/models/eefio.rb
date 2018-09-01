@@ -13,4 +13,9 @@ class Eefio
     I18n.t('api.contributors.header'),
     'Shane Becker | @veganstraightedge | https://veganstraightedge.com'
   ].freeze
+
+  CONTACT_INFO = [
+    'https://github.com/eefio/eefio-api',
+    'https://twitter.com/eefioapi'
+  ]
 end

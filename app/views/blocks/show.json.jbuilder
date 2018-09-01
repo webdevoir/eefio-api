@@ -55,6 +55,7 @@ json.meta do
   json.url           Eefio::API_URL
   json.contributors  Eefio::CONTRIBUTORS
   json.documentation @documentation
+  json.contact       Eefio::CONTACT_INFO
 end
 
 json.jsonapi do
