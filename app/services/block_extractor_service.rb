@@ -63,7 +63,7 @@ class BlockExtractorService
         size_in_bytes:                       :size,
         total_difficulty:                    :totalDifficulty
       }.each do |block_attr, raw_block_attr|
-        block.send("#{block_attr}=", raw_block_content[raw_block_attr].from_hex)
+        block.send("#{block_attr}=", raw_block_content[raw_block_attr].from_hex.to_i)
       end
 
       # Block#published_at is a special case because it’s stored as DateTime object
