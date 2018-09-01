@@ -26,11 +26,6 @@ gem 'web3-eth'
 # For background workers
 gem 'sidekiq'
 
-# For threading, promises, futures, etc
-# Used in eefio:blockchain:sync rake task
-gem 'concurrent-ruby'
-gem 'concurrent-ruby-ext'
-
 # For code style guide and linting
 gem 'rubocop', require: false
 gem 'rubocop-rspec'
