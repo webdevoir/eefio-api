@@ -8,13 +8,10 @@ namespace :eefio do
         raw_blocks = RawBlock.where(block_extracted_at: nil).limit(1000)
         p raw_blocks.map &:block_number
 
-        raw_blocks.each do |raw_block|
-          raw_block.extract_block
-        end
+        raw_blocks.each(&:extract_block)
 
         break if raw_blocks.blank?
       end
-
     end
   end
 end

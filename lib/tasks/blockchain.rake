@@ -12,7 +12,6 @@ namespace :eefio do
       puts "___ Last in sync RawBlock block_number: #{in_sync_block_number}"
       puts
 
-
       # First time run!
       if BlockImporterService.clean_slate?
         starting_block_number = 0
@@ -24,7 +23,6 @@ namespace :eefio do
         BlockImporterService.fetch_blocks_from_blockchain starting_block_number: starting_block_number,
                                                           ending_block_number:   ending_block_number
       end
-
 
       # Non-first time runs:
       # First things first, self-heal existing RawBlocks table
@@ -62,7 +60,6 @@ namespace :eefio do
         end
       end
 
-
       # Non-first time runs:
       # Sync all of the RawBlocks from the blockchain
       loop do
@@ -81,7 +78,6 @@ namespace :eefio do
         BlockImporterService.fetch_blocks_from_blockchain starting_block_number: starting_block_number,
                                                           ending_block_number:   ending_block_number
       end
-
 
       # Once RawBlocks is in sync with the blockchain, then quit!
       if BlockImporterService.raw_blocks_synced_with_blockchain?

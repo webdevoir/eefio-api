@@ -13,8 +13,8 @@ class RawBlock < ApplicationRecord
   end
 
   def extract_block
-    puts "==> Extracting Block from RawBlock: #{self.id}…"
+    puts "==> Extracting Block from RawBlock: #{id}…"
     BlockExtractorService.extract_block_from raw_block: self
-    puts "==> Extracting Block from RawBlock: #{self.id}… done."
+    puts "==> Extracting Block from RawBlock: #{id}… done."
   end
 end
