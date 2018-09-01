@@ -50,6 +50,7 @@ json.data do
 end
 
 json.meta do
+  json.description   Eefio::API_DESCRIPTION
   json.version       Eefio::API_VERSION
   json.license       Eefio::LICENSE
   json.url           Eefio::API_URL
