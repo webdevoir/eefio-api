@@ -33,7 +33,6 @@ namespace :eefio do
 
         # Find the missing RawBlocks by finding the difference between
         # the range of RawBlocks min/max and the actual RawBlocks in the database
-        saved_block_numbers = RawBlock.pluck(:block_number).sort.uniq
         saved_block_numbers_range = (starting_block_number..ending_block_number).to_a
 
         # Update the in sync setting as much as possible with the RawBlocks already saved

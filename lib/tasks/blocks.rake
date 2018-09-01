@@ -6,7 +6,7 @@ namespace :eefio do
 
       loop do
         raw_blocks = RawBlock.where(block_extracted_at: nil).limit(1000)
-        p raw_blocks.map &:block_number
+        p raw_blocks.map(&:block_number)
 
         raw_blocks.each(&:extract_block)
 
