@@ -4,7 +4,7 @@ namespace :eefio do
     task extract: :environment do
       puts '___ About to extract blocks from raw_blocks'
 
-      RawBlock.where(block_extracted_at: nil).each_slice(10) do |slice|
+      RawBlock.where(block_extracted_at: nil).each_slice(1000) do |slice|
         slice.each do |raw_block|
           raw_block.extract_block
         end
