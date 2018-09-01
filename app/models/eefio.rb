@@ -1,5 +1,5 @@
 class Eefio
-  API_VERSION         = 'ALPHA'.freeze
+  API_VERSION         = '0.0.1.ALPHA'.freeze
   JSONAPI_VERSION     = '0'.freeze
   JSONAPI_DESCRIPTION = I18n.t('jsonapi.description').freeze
   LICENSE             = 'CC0 / http://creativecommons.org/publicdomain/zero/1.0'.freeze
