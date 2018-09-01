@@ -4,11 +4,17 @@ namespace :eefio do
     task extract: :environment do
       puts '___ About to extract blocks from raw_blocks'
 
-      RawBlock.where(block_extracted_at: nil).each_slice(1000) do |slice|
-        slice.each do |raw_block|
+      loop do
+        raw_blocks = RawBlock.where(block_extracted_at: nil).limit(1000)
+        p raw_blocks.map &:block_number
+
+        raw_blocks.each do |raw_block|
           raw_block.extract_block
         end
+
+        break if raw_blocks.blank?
       end
+
     end
   end
 end
