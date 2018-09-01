@@ -8,7 +8,7 @@ gem 'rails', '~> 5.2.1'
 # Database
 gem 'pg', '>= 0.18', '< 2.0'
 
-# Webserv
+# Webserver
 gem 'puma'
 
 # API JSON views
@@ -25,6 +25,10 @@ gem 'web3-eth'
 
 # For background workers
 gem 'sidekiq'
+
+# For observability
+gem 'lograge'
+gem 'logstash-event'
 
 # For code style guide and linting
 gem 'rubocop', require: false
