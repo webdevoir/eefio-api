@@ -10,14 +10,14 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2018_06_10_063912) do
+ActiveRecord::Schema.define(version: 2018_09_02_001418) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
   create_table "blocks", force: :cascade do |t|
     t.text "address"
-    t.decimal "block_number"
+    t.integer "block_number"
     t.string "block_number_in_hex"
     t.decimal "difficulty"
     t.string "difficulty_in_hex"
