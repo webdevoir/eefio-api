@@ -107,5 +107,6 @@ Rails/Output:
   Exclude:
     - 'app/jobs/enqueue_blockchain_sync_jobs_job.rb'
     - 'app/models/ethereum.rb'
-    - 'app/services/block_importer_service.rb'
     - 'app/models/raw_block.rb'
+    - 'app/services/block_extractor_service.rb'
+    - 'app/services/block_importer_service.rb'
