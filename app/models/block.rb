@@ -7,11 +7,11 @@ class Block < ApplicationRecord
 
   class << self
     def first_block
-      find_by block_number: 0
+      @first_block ||= Block.find_by block_number: 0
     end
 
     def latest_block
-      order(block_number: :desc).limit(1).last
+      @latest_block ||= Block.order(block_number: :desc).limit(1).first
     end
 
     def latest_block_number
