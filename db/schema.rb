@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2018_09_03_030344) do
+ActiveRecord::Schema.define(version: 2018_09_03_234321) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -65,6 +65,38 @@ ActiveRecord::Schema.define(version: 2018_09_03_030344) do
     t.text "description"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+  end
+
+  create_table "transactions", force: :cascade do |t|
+    t.bigint "block_id"
+    t.string "block_address"
+    t.decimal "block_number"
+    t.string "block_number_in_hex"
+    t.string "address"
+    t.decimal "nonce"
+    t.string "nonce_in_hex"
+    t.string "to"
+    t.string "from"
+    t.decimal "gas_provided"
+    t.decimal "gas_price_in_wei"
+    t.string "gas_price_in_wei_in_hex"
+    t.text "input"
+    t.decimal "eth_sent_in_wei"
+    t.string "eth_sent_in_wei_in_hex"
+    t.integer "index_on_block"
+    t.string "index_on_block_in_hex"
+    t.integer "v"
+    t.string "v_in_hex"
+    t.string "r"
+    t.string "s"
+    t.string "token_sent_name"
+    t.string "token_sent_symbol"
+    t.string "token_sent_address"
+    t.decimal "token_sent_amount"
+    t.string "token_sent_amount_in_hex"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["block_id"], name: "index_transactions_on_block_id"
   end
 
 end
