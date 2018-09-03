@@ -10,8 +10,12 @@ class Block < ApplicationRecord
       Block.find_by block_number: 0
     end
 
-    def last_block
+    def latest_block
       Block.order(block_number: :desc).limit(1).last
+    end
+
+    def latest_block_number
+      latest_block&.block_number || 0
     end
   end
 
@@ -25,7 +29,7 @@ class Block < ApplicationRecord
 
     links[:next] = url_for(identifier: identifier, block: next_block) unless next_block == self || next_block.blank?
 
-    links[:last] = url_for(identifier: identifier, block: Block.last_block)
+    links[:last] = url_for(identifier: identifier, block: Block.latest_block)
 
     links
   end

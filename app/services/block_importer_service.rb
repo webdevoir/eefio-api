@@ -91,20 +91,22 @@ class BlockImporterService
     end
 
     def clean_slate?
-      RawBlock.latest_block_number.zero? && Setting.raw_blocks_synced_at_block_number.content.to_i.zero?
+      RawBlock.latest_block_number.zero? &&
+        Setting.raw_blocks_synced_at_block_number.content.to_i.zero? &&
+        RawBlock.count.zero?
     end
 
     def create_raw_block_from blockchain_block:
       # Save the blockchain_block to the raw_blocks table in the database
       raw_block = RawBlock.create block_number: blockchain_block.block_number, content: blockchain_block.raw_data.to_json
-      puts "+++ Saved block: #{raw_block.block_number}" if raw_block.created_at.present?
+      puts "+++ Saved RawBlock: #{raw_block.block_number}" if raw_block.created_at.present?
     end
 
     def update_raw_blocks_synced_at_block_number_setting! block_number:
       setting = Setting.raw_blocks_synced_at_block_number
       return if setting.content.to_i == block_number
 
-      puts "+++ Updating Setting: raw_blocks_synced_at_block_number: #{block_number}"
+      puts "+++ Updated Setting: raw_blocks_synced_at_block_number: #{block_number}"
 
       setting.update content: block_number
     end
