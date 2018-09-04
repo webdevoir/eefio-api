@@ -29,6 +29,7 @@ gem 'sidekiq'
 # For observability
 gem 'lograge'
 gem 'logstash-event'
+gem 'honeycomb-rails'
 
 # For code style guide and linting
 gem 'rubocop', require: false
