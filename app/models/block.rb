@@ -11,7 +11,7 @@ class Block < ApplicationRecord
     end
 
     def latest_block
-      @latest_block ||= Block.order(block_number: :desc).limit(1).first
+      @latest_block ||= Block.find_by block_number: Setting.blocks_extracted_up_to_block_number.content.to_i
     end
 
     def latest_block_number

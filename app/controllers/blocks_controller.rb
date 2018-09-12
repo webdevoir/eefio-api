@@ -14,7 +14,7 @@ class BlocksController < ApplicationController
     @block =
       case @identifier
       when :latest
-        Block.order(block_number: :desc).limit(1).first
+        Block.latest_block
       when :address
         Block.find_by address: params[:id]
       when :block_number
