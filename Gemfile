@@ -27,9 +27,9 @@ gem 'web3-eth'
 gem 'sidekiq'
 
 # For observability
+gem 'honeycomb-rails'
 gem 'lograge'
 gem 'logstash-event'
-gem 'honeycomb-rails'
 
 # For code style guide and linting
 gem 'rubocop', require: false

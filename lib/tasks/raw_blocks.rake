@@ -12,7 +12,7 @@ namespace :eefio do
 
           if raw_blocks.length > 1
             puts "!!! Deleting #{raw_blocks.length - 1} extra RawBlocks at ID #{block_number}"
-            raw_blocks[1..-1].each { |raw_block| raw_block.destroy }
+            raw_blocks[1..-1].each(&:destroy)
           end
         end
       end
@@ -20,11 +20,11 @@ namespace :eefio do
       after_raw_block_count               = RawBlock.count
       after_raw_block_latest_block_number = RawBlock.latest_block_number
 
-      puts "Total RawBlocks"
+      puts 'Total RawBlocks'
       puts "Before: #{before_raw_block_count}"
       puts "After:  #{after_raw_block_count}"
       puts
-      puts "Latest RawBlock block_number:"
+      puts 'Latest RawBlock block_number:'
       puts "Before: #{before_raw_block_latest_block_number}"
       puts "After:  #{after_raw_block_latest_block_number}"
       puts

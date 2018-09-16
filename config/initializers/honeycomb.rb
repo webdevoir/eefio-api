@@ -3,5 +3,3 @@ HoneycombRails.configure do |conf|
   conf.dataset    = ENV['HONEYCOMB_DATASET']
   conf.db_dataset = ENV['HONEYCOMB_DB_DATASET']
 end
-
-
