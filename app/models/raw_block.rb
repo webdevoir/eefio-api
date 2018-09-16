@@ -1,5 +1,5 @@
 class RawBlock < ApplicationRecord
-  validates :block_number, presence: true, uniqueness: true
+  validates :block_number, presence: true
 
   class << self
     def last_in_sync_block_number
