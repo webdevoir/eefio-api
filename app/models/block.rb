@@ -26,20 +26,18 @@ class Block < ApplicationRecord
     links[:first] = url_for(identifier: identifier, block: Block.first_block)
 
     links[:previous] = url_for(identifier: identifier, block: previous_block) unless previous_block == self || previous_block.blank?
-
-    links[:next] = url_for(identifier: identifier, block: next_block) unless next_block == self || next_block.blank?
-
-    links[:last] = url_for(identifier: identifier, block: Block.latest_block)
+    links[:next]     = url_for(identifier: identifier, block: next_block)     unless next_block     == self || next_block.blank?
+    links[:last]     = url_for(identifier: identifier, block: Block.latest_block)
 
     links
   end
 
   def next_block
-    Block.find_by(block_number: block_number + 1)
+    Block.find_by block_number: block_number + 1
   end
 
   def previous_block
-    Block.find_by(block_number: block_number - 1)
+    Block.find_by block_number: block_number - 1
   end
 
   def url_for block:, identifier:
