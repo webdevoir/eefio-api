@@ -17,7 +17,7 @@ namespace :eefio do
 
       # When all RawBlocks are extracted, update Setting, then exit!
       if BlockExtractorService.blocks_all_extracted?
-        latest_extracted_block_number = Block.order(block_number: :desc).first.block_number
+        latest_extracted_block_number = Block.order(block_number: :desc).limit(1).first.block_number
 
         BlockExtractorService.update_blocks_extracted_up_to_block_number_setting! block_number: latest_extracted_block_number
 
