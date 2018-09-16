@@ -10,7 +10,7 @@ namespace :eefio do
         puts
         break if BlockExtractorService.blocks_all_extracted?
 
-        puts "==> Finding RawBlock to extract…"
+        puts '==> Finding RawBlock to extract…'
         BlockExtractorService.extract_block_from raw_block: RawBlock.an_unextracted_one
       end
 
