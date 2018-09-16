@@ -8,10 +8,11 @@ namespace :eefio do
       # Extract all of the Blocks from RawBlocks table
       loop do
         puts
-        break if BlockExtractorService.blocks_all_extracted?
+        unextracted_raw_block = RawBlock.an_unextracted_one
+        break if unextracted_raw_block.blank?
 
         puts '==> Finding RawBlock to extract…'
-        BlockExtractorService.extract_block_from raw_block: RawBlock.an_unextracted_one
+        BlockExtractorService.extract_block_from raw_block: unextracted_raw_block
       end
 
       # When all RawBlocks are extracted, update Setting, then exit!
