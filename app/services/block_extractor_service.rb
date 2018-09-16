@@ -19,64 +19,6 @@ class BlockExtractorService
   @block_numbers_to_fetch = []
 
   class << self
-    # BlockImporterService.extract_blocks_from_raw_blocks
-    # # => Starts at: 0. Ends at: the current latest Ethereum block number
-
-    # BlockImporterService.extract_blocks_from_raw_blocks starting_block_number: 0,
-    #                                                     ending_block_number:   2
-    # # => Starts at: 0. Ends at: 2.
-
-    # BlockImporterService.extract_blocks_from_raw_blocks starting_block_number: 1312
-    # # => Starts at: 1312. Ends at: the latest Ethereum block number
-
-    # BlockImporterService.extract_blocks_from_raw_blocks block_numbers:         [1, 2, 3, 5, 8]
-    # # => Only fetches block numbers: 1, 2, 3, 5, 8
-
-    # The block_numbers param takes precedence over starting/ending_block_number
-    def extract_blocks_from_raw_blocks starting_block_number: nil, ending_block_number: nil, block_numbers: nil
-      # Set fallback ending_block_number if it’s blank or zero
-      ending_block_number = RawBlock.latest_block_number if ending_block_number.blank? || ending_block_number.zero?
-
-      # Set fallback ending_block_number if it’s blank
-      starting_block_number = 0 if starting_block_number.blank?
-
-      # Don’t try to extract Blocks from RawBlocks that don’t exist in the database yet
-      if block_numbers.blank? && ending_block_number > Block.latest_block_number
-        RawBlock.latest_block_number
-      else
-        ending_block_number
-      end
-
-      # Setup batch of block numbers to work through
-      @block_numbers_to_fetch = block_numbers&.uniq&.sort || (starting_block_number..ending_block_number).to_a
-
-      # Go through all of those @block_numbers_to_fetch
-      loop do
-        # Get current block_number from the front of @block_numbers_to_fetch array
-        block_number = @block_numbers_to_fetch.shift
-        break if block_number.blank?
-
-        # Find the RawBlock in the database
-        raw_block = RawBlock.find_by(block_number: block_number)
-        break if raw_block.blank?
-
-        # Extract the block from the raw_blocks table and save to the blocks table
-        BlockExtractorService.extract_block_from raw_block: raw_block
-
-        # Check for extracted up to Blocks between
-        # the last extracted up to Block block_number and the current block_number
-        start_again  = Setting.blocks_extracted_up_to_block_number.content.to_i
-        finish_again = block_number
-
-        (start_again..finish_again).each do |block_number_again|
-          check_blocks_extracted_up_to_block_number_setting block_number: block_number_again
-        end
-
-        # Once @block_numbers_to_fetch is empty [], quit!
-        break if block_number.blank?
-      end
-    end
-
     def extract_block_from raw_block:
       puts "==> Extracting Block from RawBlock: #{raw_block.block_number}"
 
@@ -144,28 +86,8 @@ class BlockExtractorService
       end
     end
 
-    def check_blocks_extracted_up_to_block_number_setting block_number:
-      # Double check that it’s in the database
-      block = Block.find_by block_number: block_number
-
-      # If it is, update the setting for extracted up to Block block_number
-      if block.present?
-        update_blocks_extracted_up_to_block_number_setting! block_number: block.block_number
-      else
-        # If not, add that block_number to the front of the @block_numbers_to_fetch array to try fetching it again
-        puts "!!! Block missing. Adding to range to try again. block_number: #{block_number}"
-        @block_numbers_to_fetch.unshift block_number
-      end
-    end
-
     def blocks_all_extracted?
-      RawBlock.latest_block_number == Setting.blocks_extracted_up_to_block_number.content.to_i
-    end
-
-    def clean_slate?
-      Block.latest_block_number.zero? &&
-        Setting.blocks_extracted_up_to_block_number.content.to_i.zero? &&
-        Block.count.zero?
+      RawBlock.an_unextracted_one.blank?
     end
 
     def update_blocks_extracted_up_to_block_number_setting! block_number:

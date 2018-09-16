@@ -10,11 +10,9 @@ class RawBlock < ApplicationRecord
       # Get the latest RawBlock’s block_number in the database
       order(block_number: :desc).limit(1).first&.block_number || 0
     end
-  end
 
-  def extract_block
-    puts "==> Extracting Block from RawBlock: #{id}…"
-    BlockExtractorService.extract_block_from raw_block: self
-    puts "==> Extracting Block from RawBlock: #{id}… done."
+    def an_unextracted_one
+      limit(1).where(block_extracted_at: nil).first
+    end
   end
 end
