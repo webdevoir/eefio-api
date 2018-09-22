@@ -12,7 +12,7 @@ class RawBlock < ApplicationRecord
     end
 
     def an_unextracted_one
-      where block_extracted_at: nil
+      where(block_extracted_at: nil).first
     end
   end
 end
