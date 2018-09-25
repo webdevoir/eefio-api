@@ -37,8 +37,5 @@ module EefioAPI
 
     # Use Sidekiq for background job queue
     config.active_job.queue_adapter = :sidekiq
-
-    # TODO: Why doesn’t this autoload String.rb and Integer.rb from /app/lib?
-    config.autoload_paths << Rails.root.join('app', 'lib')
   end
 end
