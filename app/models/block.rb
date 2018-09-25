@@ -46,4 +46,8 @@ class Block < ApplicationRecord
 
     [Eefio::API_URL, URL_NAMESPACE, namespace_identifier].join('/')
   end
+
+  def raw
+    RawBlock.find_by(block_number: block_number).content
+  end
 end
