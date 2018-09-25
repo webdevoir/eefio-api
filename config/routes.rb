@@ -8,6 +8,12 @@ Rails.application.routes.draw do
   # /blocks/0xACAB find by block address
   get 'blocks/:id', to: 'blocks#show', as: :block, defaults: { format: :json }
 
+  # Show a Block's raw content from an Ethereum node’s JSON-RPC
+  # /blocks/latest/raw find by biggest block number
+  # /blocks/123/raw    find by block number
+  # /blocks/0xACAB/raw find by block address
+  get 'blocks/:id/raw', to: 'blocks#raw', as: :raw_block, defaults: { format: :json }
+
   ### Sidekiq... ###
   # /sidekiq for job queue admin
   #

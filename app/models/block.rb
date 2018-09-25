@@ -19,15 +19,18 @@ class Block < ApplicationRecord
     end
   end
 
-  def links identifier:
+  def links identifier:, raw:
     links = {}
 
-    links[:self]  = url_for(identifier: identifier, block: self)
-    links[:first] = url_for(identifier: identifier, block: Block.first_block)
-
-    links[:previous] = url_for(identifier: identifier, block: previous_block) unless previous_block == self || previous_block.blank?
-    links[:next]     = url_for(identifier: identifier, block: next_block)     unless next_block     == self || next_block.blank?
-    links[:last]     = url_for(identifier: identifier, block: Block.latest_block)
+    {
+      self:     self,
+      first:    Block.first_block,
+      previous: previous_block,
+      next:     next_block,
+      last:     Block.latest_block
+    }.each do |name, block|
+      links[name] = url_for(identifier: identifier, block: block, raw: raw) unless block.blank?
+    end
 
     links
   end
@@ -40,11 +43,17 @@ class Block < ApplicationRecord
     Block.find_by block_number: block_number - 1
   end
 
-  def url_for block:, identifier:
+  def url_for block:, identifier:, raw:
     namespace_identifier = block.address
     namespace_identifier = block.block_number.to_i if identifier == :block_number
 
-    [Eefio::API_URL, URL_NAMESPACE, namespace_identifier].join('/')
+    puts '*'*80
+    puts raw
+    puts '*'*80
+
+    raw_path = raw ? 'raw' : nil
+
+    [Eefio::API_URL, URL_NAMESPACE, namespace_identifier, raw_path].compact.join('/')
   end
 
   def raw
