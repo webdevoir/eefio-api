@@ -8,15 +8,31 @@ en:
 
     endpoints:
       - name: root
+        path:
         description:
-          "Get a list of all Eefio API endpoints. Each entry in the list includes: name, HTTP verb,
-          API URL, documentation URL, and a description of what the endpoint does.
-          You’re looking at it now!"
+          "Get a list of all Eefio API endpoints. Each entry in the list includes:
+          name, HTTP verb, API URL, documentation URL,
+          and a description of what the endpoint does. You’re looking at it now!"
+
       - name: blocks#one
+        path: blocks/:identifier
         description:
           "Get any ONE Block. Specify which Block you want by one of three identifiers:
           latest, block number, or block address.
           Latest is a string literal: latest.
           Block number is an integer (eg, 0, 1, 137, 1979, 44203, 100000001, etc).
-          Block address is a hexadecimal number (eg, 0x0, 0x1, 0x311, 0x6521, 0xACAB, 0x4294967297 etc).
+          Block address is a hexadecimal number
+          (eg, 0x0, 0x1, 0x311, 0x6521, 0xACAB, 0x4294967297 etc).
           Examples: /blocks/latest, /blocks/137, /blocks/0xACAB."
+
+      - name: blocks#raw
+        path: blocks/:identifier/raw
+        description:
+          "Get any ONE Block in the raw form that you would get from an Ethereum node.
+          Specify which Block you want by one of three identifiers:
+          latest, block number, or block address.
+          Latest is a string literal: latest.
+          Block number is an integer (eg, 0, 1, 137, 1979, 44203, 100000001, etc).
+          Block address is a hexadecimal number
+          (eg, 0x0, 0x1, 0x311, 0x6521, 0xACAB, 0x4294967297 etc).
+          Examples: /blocks/latest/raw, /blocks/137/raw, /blocks/0xACAB/raw."
