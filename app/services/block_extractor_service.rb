@@ -14,7 +14,7 @@ class BlockExtractorService
 
       # Keys (on the left) are Block attributes (columns in the database on the blocks table)
       # Values (on the right) are RawBlock.content attributes (keys in the JSON blob)
-      # Walk with each pair and save the value from the JSON blob into the new Block object
+      # Walk through each pair and save the value from the JSON blob into the new Block object
       {
         address:                                    :hash,
         block_number_in_hex:                        :number,
@@ -65,7 +65,7 @@ class BlockExtractorService
         block.save
         puts "+++ Saved block: #{block.block_number}" if block.created_at.present?
 
-        # Mark the associated RawBlock that its block data has been extract
+        # Mark the associated RawBlock that its Block data has been extracted
         raw_block.update block_extracted_at: block.created_at
       end
     end
