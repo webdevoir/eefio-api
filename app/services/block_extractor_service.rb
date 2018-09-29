@@ -1,5 +1,5 @@
 class BlockExtractorService
-  # TODO: this smells bad
+  # TODO: Remove this? It's not used in here?
   @block_numbers_to_fetch = []
 
   class << self
