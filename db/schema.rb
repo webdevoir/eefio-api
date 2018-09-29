@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2018_09_22_191941) do
+ActiveRecord::Schema.define(version: 2018_09_28_071150) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -97,6 +97,10 @@ ActiveRecord::Schema.define(version: 2018_09_22_191941) do
     t.string "token_sent_amount_in_hex"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "gas_provided_in_hex"
+    t.datetime "published_at"
+    t.string "published_at_in_seconds_since_epoch_in_hex"
+    t.decimal "published_at_in_seconds_since_epoch"
     t.index ["block_id"], name: "index_transactions_on_block_id"
   end
 
