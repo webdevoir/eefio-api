@@ -3,6 +3,8 @@ class Block < ApplicationRecord
   validates :block_number_in_hex, presence: true
   validates :address,             presence: true
 
+  has_many :transactions
+
   URL_NAMESPACE = 'blocks'.freeze
 
   class << self
