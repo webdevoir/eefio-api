@@ -83,7 +83,10 @@ class TransactionExtractorService
 
           # Save the Block to the database
           transaction.save
-          puts "+++ Saved Transaction: #{transaction.block_number} [#{transaction.index_on_block}]" if transaction.created_at.present?
+
+          if transaction.created_at.present?
+            puts "+++ Saved Transaction: #{transaction.block_number} [#{transaction.index_on_block}]"
+          end
         end
 
         # Mark the associated RawBlock that its Transactions data has been extracted
