@@ -11,8 +11,12 @@ class RawBlock < ApplicationRecord
       order(block_number: :desc).limit(1).first&.block_number || 0
     end
 
-    def an_unextracted_one
+    def with_unextracted_block
       find_by block_extracted_at: nil
+    end
+
+    def with_unextracted_transactions
+      find_by transactions_extracted_at: nil
     end
   end
 end

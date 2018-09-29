@@ -71,7 +71,7 @@ class BlockExtractorService
     end
 
     def blocks_all_extracted?
-      RawBlock.an_unextracted_one.blank?
+      RawBlock.with_unextracted_block.blank?
     end
 
     def update_blocks_extracted_up_to_block_number_setting! block_number:

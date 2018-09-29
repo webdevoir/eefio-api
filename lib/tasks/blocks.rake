@@ -8,7 +8,7 @@ namespace :eefio do
       # Extract all of the Blocks from RawBlocks table
       loop do
         puts
-        unextracted_raw_block = RawBlock.an_unextracted_one
+        unextracted_raw_block = RawBlock.with_unextracted_block
         break if unextracted_raw_block.blank?
 
         puts '==> Finding RawBlock to extract…'
