@@ -89,8 +89,9 @@ class TransactionExtractorService
           end
         end
 
+
         # Mark the associated RawBlock that its Transactions data has been extracted
-        raw_block.update transactions_extracted_at: block.transactions.order(index_on_block: :desc).first.created_at
+        raw_block.update transactions_extracted_at: Time.current
       end
     end
 
@@ -105,7 +106,7 @@ class TransactionExtractorService
       puts "+++ Updated Setting: transactions_extracted_up_to_block_number: #{block_number}"
       puts
 
-      setting.update content: block_number
+      setting.update content: block_number.to_i
     end
   end
 end
