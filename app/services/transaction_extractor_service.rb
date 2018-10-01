@@ -18,13 +18,6 @@ class TransactionExtractorService
       Transaction.transaction do
         raw_transactions.each do |raw_transaction|
           raw_transaction = raw_transaction.with_indifferent_access
-          p raw_transaction
-          puts
-          puts
-          puts '*'*80
-          puts
-          puts
-
           # Create a new empty Transaction object
           transaction = block.transactions.new
 

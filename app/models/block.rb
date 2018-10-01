@@ -49,10 +49,6 @@ class Block < ApplicationRecord
     namespace_identifier = block.address
     namespace_identifier = block.block_number.to_i if identifier == :block_number
 
-    puts '*'*80
-    puts raw
-    puts '*'*80
-
     raw_path = raw ? 'raw' : nil
 
     [Eefio::API_URL, URL_NAMESPACE, namespace_identifier, raw_path].compact.join('/')
