@@ -1,6 +1,6 @@
 namespace :eefio do
   namespace :blocks do
-    desc 'Extracts blocks from the raw_blocks table into the blocks table'
+    desc 'Extracts Blocks from the raw_blocks table into the blocks table'
     task extract: :environment do
       puts
       puts '___ Extracting Blocks…'
