@@ -57,4 +57,8 @@ class Block < ApplicationRecord
   def raw
     RawBlock.find_by(block_number: block_number).content
   end
+
+  def transactions_by_address
+    transactions.order(index_on_block: :asc).map(&:address)
+  end
 end

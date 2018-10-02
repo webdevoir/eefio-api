@@ -45,7 +45,10 @@ json.data do
     json.total_difficulty_in_hex @block.total_difficulty_in_hex
 
     json.transactions_root_address @block.transactions_root_address
-    json.uncles @block.uncles
+
+    json.transactions_by_address @block.transactions_by_address
+
+    json.uncles_by_address @block.uncles
   end
 end
 
