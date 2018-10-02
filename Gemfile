@@ -3,6 +3,7 @@ source 'https://rubygems.org'
 # Required Ruby version
 ruby '2.5.1'
 
+# Application
 gem 'rails', '~> 5.2.1'
 
 # Database
