@@ -52,6 +52,15 @@ group :development do
   # Spring speeds up development by keeping your application running in the background. Read more: https://github.com/rails/spring
   gem 'spring'
   gem 'spring-watcher-listen', '~> 2.0.0'
+
+  # For memory profiling
+  gem 'rack-mini-profiler'
+  gem 'memory_profiler'
+
+  # For call-stack profiling flamegraphs
+  gem 'fast_stack'
+  gem 'flamegraph'
+  gem 'stackprof'
 end
 
 # TODO: fix upstream
