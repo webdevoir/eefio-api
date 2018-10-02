@@ -2,8 +2,8 @@ class RootController < ApplicationController
   def index
     @links = {
       self:          Eefio::API_URL,
-      blocks_latest: api_url_for(path: '/blocks/latest'),
-      blocks_first:  api_url_for(path: '/blocks/0')
+      blocks_latest: api_url_for(path: 'blocks/latest'),
+      blocks_first:  api_url_for(path: 'blocks/0')
     }
 
     @endpoints = I18n.t('api.endpoints').map do |endpoint|
