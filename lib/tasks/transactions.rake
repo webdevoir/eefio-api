@@ -27,7 +27,7 @@ namespace :eefio do
         end
       end
 
-      puts "___ FINISHED! "
+      puts '___ FINISHED!'
       puts
     end
   end

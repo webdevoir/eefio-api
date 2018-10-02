@@ -19,7 +19,6 @@ class BlocksController < ApplicationController
     @documentation = [Eefio::DOCUMENTATION_URL, Block::URL_NAMESPACE, route.to_s].join('/')
   end
 
-
   def set_id_from_params
     @id = params.permit(:id)[:id].strip.downcase
   end

@@ -12,7 +12,6 @@ class TransactionExtractorService
       # Get the Transactions out of the RawBlock’s content hash
       raw_transactions = raw_block_content['transactions']
 
-
       # Ensure that BOTH happen together:
       # The Transactions are created and the RawBlock is updated
       Transaction.transaction do
@@ -77,11 +76,8 @@ class TransactionExtractorService
           # Save the Block to the database
           transaction.save
 
-          if transaction.created_at.present?
-            puts "+++ Saved Transaction: #{transaction.block_number} [#{transaction.index_on_block}]"
-          end
+          puts "+++ Saved Transaction: #{transaction.block_number} [#{transaction.index_on_block}]" if transaction.created_at.present?
         end
-
 
         # Mark the associated RawBlock that its Transactions data has been extracted
         raw_block.update transactions_extracted_at: Time.current

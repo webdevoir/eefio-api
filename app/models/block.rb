@@ -31,7 +31,7 @@ class Block < ApplicationRecord
       next:     next_block,
       last:     Block.latest_block
     }.each do |name, block|
-      links[name] = url_for(identifier: identifier, block: block, raw: raw) unless block.blank?
+      links[name] = url_for(identifier: identifier, block: block, raw: raw) if block.present?
     end
 
     links
