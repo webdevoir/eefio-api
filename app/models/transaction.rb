@@ -1,7 +1,8 @@
 class Transaction < ApplicationRecord
   belongs_to :block
 
-  scope :oldest, -> { order(index_on_block: :asc).limit(1) }
+  scope :sorted, -> { order(index_on_block: :asc) }
+  scope :oldest, -> { sorted.limit(1) }
   scope :latest, -> { order(index_on_block: :desc).limit(1) }
 
   URL_NAMESPACE = 'transactions'.freeze

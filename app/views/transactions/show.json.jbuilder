@@ -6,6 +6,12 @@ end
 
 json.data do
   json.transaction do
+    json.block do
+      json.address @transaction.block_address
+      json.block_number @transaction.block_number
+      json.block_number_in_hex @transaction.block_number_in_hex
+    end
+
     json.address @transaction.address
 
     json.to @transaction.to
@@ -35,12 +41,6 @@ json.data do
     json.s @transaction.s
     json.v @transaction.v
     json.v_in_hex @transaction.v_in_hex
-
-    json.block do
-      json.address @transaction.block_address
-      json.block_number @transaction.block_number
-      json.block_number_in_hex @transaction.block_number_in_hex
-    end
   end
 end
 

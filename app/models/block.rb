@@ -21,7 +21,7 @@ class Block < ApplicationRecord
     end
   end
 
-  def links identifier:, raw:
+  def links identifier:, suffix:
     links = {}
 
     {
@@ -31,7 +31,7 @@ class Block < ApplicationRecord
       next:     next_block,
       last:     Block.latest_block
     }.each do |name, block|
-      links[name] = url_for(identifier: identifier, block: block, raw: raw) if block.present?
+      links[name] = url_for(identifier: identifier, block: block, suffix: suffix) if block.present?
     end
 
     links
@@ -45,13 +45,11 @@ class Block < ApplicationRecord
     @next_block ||= Block.find_by block_number: block_number + 1
   end
 
-  def url_for block:, identifier:, raw:
+  def url_for block:, identifier:, suffix:
     namespace_identifier = block.address
     namespace_identifier = block.block_number.to_i if identifier == :block_number
 
-    raw_path = raw ? 'raw' : nil
-
-    [Eefio::API_URL, URL_NAMESPACE, namespace_identifier, raw_path].compact.join('/')
+    [Eefio::API_URL, URL_NAMESPACE, namespace_identifier, suffix].compact.join('/')
   end
 
   def raw

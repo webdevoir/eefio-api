@@ -15,6 +15,12 @@ Rails.application.routes.draw do
   # /blocks/123/raw    find by block number
   get 'blocks/:id/raw', to: 'blocks#raw', as: :raw_block, defaults: { format: :json }
 
+  # Show a Block’s Transactions
+  # /blocks/latest/raw find by biggest block number
+  # /blocks/0xACAB/raw find by block address
+  # /blocks/123/raw    find by block number
+  get 'blocks/:id/transactions', to: 'blocks#transactions', as: :block_transactions, defaults: { format: :json }
+
   # Show a Transaction
   # /transactions/latest find by biggest Block number and biggest index_on_block on Transaction
   # /transactions/0xACAB find by Transaction address
