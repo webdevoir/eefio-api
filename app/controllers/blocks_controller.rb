@@ -6,16 +6,23 @@ class BlocksController < ApplicationController
 
   def show
     set_documentation_url route: :one
+
+    @links[:raw]          = @block.url_for block: @block, identifier: @identifier, suffix: :raw
+    @links[:transactions] = @block.url_for block: @block, identifier: @identifier, suffix: :transactions
   end
 
   def raw
     set_documentation_url route: :raw
     @raw = JSON.parse @block.raw
+
+    @links[:block] = @block.url_for block: @block, identifier: @identifier, suffix: nil
   end
 
   def transactions
     set_documentation_url route: :transactions
     @transactions = @block.transactions.sorted
+
+    @links[:block] = @block.url_for block: @block, identifier: @identifier, suffix: nil
   end
 
   def transaction
