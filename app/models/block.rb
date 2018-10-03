@@ -37,12 +37,12 @@ class Block < ApplicationRecord
     links
   end
 
-  def next_block
-    Block.find_by block_number: block_number + 1
+  def previous_block
+    @previous_block ||= Block.find_by block_number: block_number - 1
   end
 
-  def previous_block
-    Block.find_by block_number: block_number - 1
+  def next_block
+    @next_block ||= Block.find_by block_number: block_number + 1
   end
 
   def url_for block:, identifier:, raw:
