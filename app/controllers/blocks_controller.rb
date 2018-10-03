@@ -28,8 +28,30 @@ class BlocksController < ApplicationController
   def transaction
     set_documentation_url route: :transaction
 
-    index = params.permit(:index)[:index].strip.downcase
-    @transaction = @block.transactions.where(index_on_block: index).first
+    index        = params.permit(:index)[:index].strip.downcase
+    transactions = @block.transactions.sorted
+    @transaction = transactions.where(index_on_block: index).first
+
+    @links = {}
+
+    {
+      self:     @transaction,
+      first:    transactions.first,
+      previous: transactions.where(index_on_block: @transaction.index_on_block - 1).first,
+      next:     transactions.where(index_on_block: @transaction.index_on_block + 1).first,
+      last:     transactions.last
+    }.each do |name, transaction|
+      if transaction.present?
+        @links[name] = @transaction.url_for block:       @block,
+                                            transaction: @transaction,
+                                            identifier:  @identifier,
+                                            suffix:      :transactions,
+                                            index:       transaction.index_on_block
+      end
+    end
+
+    @links[:block]        = @block.url_for block: @block, identifier: @identifier, suffix: nil
+    @links[:transactions] = @block.url_for block: @block, identifier: @identifier, suffix: :transactions
   end
 
   private

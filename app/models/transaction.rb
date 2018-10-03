@@ -18,7 +18,7 @@ class Transaction < ApplicationRecord
     end
   end
 
-  def links identifier:, raw:
+  def links block: nil, identifier:, suffix:, index: nil
     links = {}
 
     {
@@ -28,7 +28,7 @@ class Transaction < ApplicationRecord
       next:     next_transaction,
       last:     Transaction.latest_transaction
     }.each do |name, transaction|
-      links[name] = url_for(transaction: transaction, raw: raw) if transaction.present?
+      links[name] = url_for(block: block, transaction: transaction, suffix: suffix, index: index) if transaction.present?
     end
 
     links
@@ -64,10 +64,11 @@ class Transaction < ApplicationRecord
     other_block.transactions.latest.last
   end
 
-  def url_for transaction:, raw:
-    raw_path = raw ? 'raw' : nil
+  def url_for block: nil, identifier: nil, transaction:, suffix: nil, index: nil
+    blocks_path      = block ? :block     : nil
+    block_identifier = block ? identifier : nil
 
-    [Eefio::API_URL, URL_NAMESPACE, transaction.address, raw_path].compact.join('/')
+    [Eefio::API_URL, blocks_path, block_identifier, URL_NAMESPACE, transaction.address, suffix, index].compact.join('/')
   end
 
   def raw
