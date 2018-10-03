@@ -17,7 +17,8 @@ en:
       - name: blocks#one
         path: blocks/:identifier
         description:
-          "Get any ONE Block. Specify which Block you want by one of three identifiers:
+          "Get any ONE Block.
+          Specify which Block you want by one of three identifiers:
           latest, block number, or block address.
           Latest is a string literal: latest.
           Block number is an integer (eg, 0, 1, 137, 1979, 44203, 100000001, etc).
@@ -36,3 +37,25 @@ en:
           Block address is a hexadecimal number
           (eg, 0x0, 0x1, 0x311, 0x6521, 0xACAB, 0x4294967297 etc).
           Examples: /blocks/latest/raw, /blocks/137/raw, /blocks/0xACAB/raw."
+
+      - name: transactions#one
+        path: transactions/:identifier
+        description:
+          "Get any ONE Transaction.
+          Specify which Transaction you want by one of two identifiers:
+          latest or transaction address.
+          Latest is a string literal: latest.
+          Block address is a hexadecimal number
+          (eg, 0x0, 0x1, 0x311, 0x6521, 0xACAB, 0x4294967297 etc).
+          Examples: /transactions/latest, /transactions/0xACAB."
+
+      - name: transactions#raw
+        path: transactions/:identifier/raw
+        description:
+          "Get any ONE Transaction in the raw form that you would get from an Ethereum node.
+          Specify which Transaction you want by one of two identifiers:
+          latest or transaction address.
+          Latest is a string literal: latest.
+          Block address is a hexadecimal number
+          (eg, 0x0, 0x1, 0x311, 0x6521, 0xACAB, 0x4294967297 etc).
+          Examples: /transactions/latest/raw, /transactions/0xACAB/raw."
