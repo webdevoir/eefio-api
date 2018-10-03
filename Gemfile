@@ -24,9 +24,6 @@ gem 'rack-cors'
 # For Ethereum network API
 gem 'web3-eth'
 
-# For background workers
-gem 'sidekiq'
-
 # For observability
 gem 'honeycomb-rails'
 gem 'lograge'

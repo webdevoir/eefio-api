@@ -24,30 +24,4 @@ Rails.application.routes.draw do
   # /transactions/0xACAB/raw find by Transaction address
   # /transactions/latest/raw find by biggest Block number and biggest index_on_block on Transaction
   get 'transactions/:id/raw', to: 'transactions#raw', as: :raw_transaction, defaults: { format: :json }
-
-  ### Sidekiq... ###
-  # /sidekiq for job queue admin
-  #
-  # Protect against timing attacks:
-  # - See https://codahale.com/a-lesson-in-timing-attacks
-  # - See https://thisdata.com/blog/timing-attacks-against-string-comparison
-  # - Use & (do not use &&) so that it doesn’t short circuit.
-  # - Use digests to stop length information leaking
-  #   (see also ActiveSupport::SecurityUtils.variable_size_secure_compare)
-  require 'sidekiq/web'
-
-  if Rails.env.production?
-    Sidekiq::Web.use Rack::Auth::Basic do |username, password|
-      ActiveSupport::SecurityUtils.secure_compare(
-        ::Digest::SHA256.hexdigest(username),
-        ::Digest::SHA256.hexdigest(ENV['SIDEKIQ_USERNAME'])
-      ) & ActiveSupport::SecurityUtils.secure_compare(
-        ::Digest::SHA256.hexdigest(password),
-        ::Digest::SHA256.hexdigest(ENV['SIDEKIQ_PASSWORD'])
-      )
-    end
-  end
-
-  mount Sidekiq::Web, at: '/sidekiq'
-  ### ...Sidekiq ###
 end
