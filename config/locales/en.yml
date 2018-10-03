@@ -38,6 +38,32 @@ en:
           (eg, 0x0, 0x1, 0x311, 0x6521, 0xACAB, 0x4294967297 etc).
           Examples: /blocks/latest/raw, /blocks/137/raw, /blocks/0xACAB/raw."
 
+      - name: blocks#transactions
+        path: blocks/:identifier/transactions
+        description:
+          "Get all Transaction for any one block.
+          Specify which Block you want by one of three identifiers:
+          latest, block number, or block address.
+          Latest is a string literal: latest.
+          Block number is an integer (eg, 0, 1, 137, 1979, 44203, 100000001, etc).
+          Block address is a hexadecimal number
+          (eg, 0x0, 0x1, 0x311, 0x6521, 0xACAB, 0x4294967297 etc).
+          Examples: /blocks/latest/transactions, /blocks/137/transactions, /blocks/0xACAB/transactions."
+
+      - name: blocks#transaction
+        path: blocks/:identifier/transaction/:index
+        description:
+          "Get all Transaction for any one block.
+          Specify which Block you want by one of three identifiers:
+          latest, block number, or block address.
+          Latest is a string literal: latest.
+          Block number is an integer (eg, 0, 1, 137, 1979, 44203, 100000001, etc).
+          Block address is a hexadecimal number
+          (eg, 0x0, 0x1, 0x311, 0x6521, 0xACAB, 0x4294967297 etc).
+          Specify which Transaction you want by one its index on its parent Block:
+          Index is an integer: 0, 1, 2, … 33, 37.
+          Examples: /blocks/latest/transaction/0, /blocks/137/transaction/13, /blocks/0xACAB/transaction/33."
+
       - name: transactions#one
         path: transactions/:identifier
         description:
