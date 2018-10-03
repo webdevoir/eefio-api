@@ -1,8 +1,8 @@
 class BlocksController < ApplicationController
-  before_action :set_id_from_params, only: [:show, :raw, :transactions]
-  before_action :set_identifier,     only: [:show, :raw, :transactions]
-  before_action :set_block,          only: [:show, :raw, :transactions]
-  before_action :set_links,          only: [:show, :raw, :transactions]
+  before_action :set_id_from_params
+  before_action :set_identifier
+  before_action :set_block
+  before_action :set_links, only: [:show, :raw, :transactions]
 
   def show
     set_documentation_url route: :one
@@ -16,6 +16,13 @@ class BlocksController < ApplicationController
   def transactions
     set_documentation_url route: :transactions
     @transactions = @block.transactions.sorted
+  end
+
+  def transaction
+    set_documentation_url route: :transaction
+
+    index = params.permit(:index)[:index].strip.downcase
+    @transaction = @block.transactions.where(index_on_block: index).first
   end
 
   private
