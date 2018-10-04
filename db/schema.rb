@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2018_10_01_205415) do
+ActiveRecord::Schema.define(version: 2018_10_04_054536) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -46,6 +46,7 @@ ActiveRecord::Schema.define(version: 2018_10_01_205415) do
     t.string "uncles"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["block_number"], name: "index_blocks_on_block_number"
   end
 
   create_table "raw_blocks", force: :cascade do |t|
@@ -101,6 +102,7 @@ ActiveRecord::Schema.define(version: 2018_10_01_205415) do
     t.datetime "published_at"
     t.string "published_at_in_seconds_since_epoch_in_hex"
     t.decimal "published_at_in_seconds_since_epoch"
+    t.index ["address"], name: "index_transactions_on_address"
     t.index ["block_id"], name: "index_transactions_on_block_id"
   end
 
